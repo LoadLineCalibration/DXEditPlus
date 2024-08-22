@@ -36,20 +36,17 @@ const
   PF_HighShadowDetail  = $00800000;  // High detail shadows.
   PF_Portal            = $04000000;  // Portal between iZones.
   PF_Mirrored          = $08000000;  // Reflective surface.
-
   // Editor flags.
   PF_Memorized         = $01000000;  // Editor: Poly is remembered.
   PF_Selected          = $02000000;  // Editor: Poly is selected.
   PF_Highlighted       = $10000000;  // Editor: Poly is highlighted.
   PF_FlatShaded        = $40000000;  // FPoly has been split by SplitPolyWithPlane.
-
   // Internal.
   PF_EdProcessed       = $40000000;  // FPoly was already processed in editorBuildFPolys.
   PF_EdCut             = $80000000;  // FPoly has been split by SplitPolyWithPlane.
   PF_RenderFog         = $40000000;  // Render with fogmapping.
   PF_Occlude           = $80000000;  // Occludes even if PF_NoOcclude.
   PF_RenderHint        = $01000000;  // Rendering optimization hint.
-
   // Combinations of flags.
   PF_NoOcclude         = PF_Masked or PF_Translucent or PF_Invisible or PF_Modulated;
   PF_NoEdit            = PF_Memorized or PF_Selected or PF_EdProcessed or PF_NoMerge or PF_EdCut;
@@ -58,7 +55,6 @@ const
   PF_NoAddToBSP        = PF_EdCut or PF_EdProcessed or PF_Selected or PF_Memorized;
   PF_NoShadows         = PF_Unlit or PF_Invisible or PF_Environment or PF_FakeBackdrop;
   PF_Transient         = PF_Highlighted;
-
 
 
 implementation
