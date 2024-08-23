@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, uEditorLoader, Vcl.Menus,
-  uEditor.Strings;
+  uEditor.Strings, system.Types;
 
 type
   TfrmBuildOptions = class(TForm)
@@ -138,7 +138,8 @@ end;
 
 procedure TfrmBuildOptions.PATHSBUILD1Click(Sender: TObject);
 begin
-    if MessageDlg(strAskBuildPaths, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+    if MessageBox(Handle, PChar(strAskBuildPaths), 'Build Paths', MB_YESNO +
+       MB_ICONQUESTION + MB_TOPMOST) = IDYES then
     begin
         ServerCmd('PATHS BUILD');
     end;
@@ -146,7 +147,8 @@ end;
 
 procedure TfrmBuildOptions.PATHSBUILDHIGHOPT1Click(Sender: TObject);
 begin
-    if MessageDlg(strAskBuildPaths, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+    if MessageBox(Handle, PChar(strAskBuildPaths), 'Build Paths', MB_YESNO +
+       MB_ICONQUESTION + MB_TOPMOST) = IDYES then
     begin
         ServerCmd('PATHS BUILD HIGHOPT');
     end;
@@ -154,7 +156,8 @@ end;
 
 procedure TfrmBuildOptions.PATHSBUILDLOWOPT1Click(Sender: TObject);
 begin
-    if MessageDlg(strAskBuildPaths, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+    if MessageBox(Handle, PChar(strAskBuildPaths), 'Build Paths', MB_YESNO +
+       MB_ICONQUESTION + MB_TOPMOST) = IDYES then
     begin
         ServerCmd('PATHS BUILD LOWOPT');
     end;
