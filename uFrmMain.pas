@@ -7,7 +7,8 @@ uses
   Vcl.Dialogs, system.IniFiles, uEditorLoader, Vcl.StdCtrls, uFrmViewport, ES.BaseControls, ES.Layouts, Vcl.Menus,
   ES.CfxClasses, Vcl.Buttons, Vcl.ExtCtrls, uEditorTypes, Editor.Editor, Engine.UnCamera, Engine.UnObj, Vcl.ComCtrls,
   System.Threading, System.ImageList, Vcl.ImgList, system.IOUtils, System.StrUtils, uEditor.Consts, uEditor.Strings, JPP.BasicSpeedButton,
-  Vcl.ToolWin, JvExControls, JvSpeedButton, Vcl.ButtonStylesAttributes, Vcl.StyledButton;
+  Vcl.ToolWin, JvExControls, JvSpeedButton, Vcl.ButtonStylesAttributes, Vcl.StyledButton, System.Actions, Vcl.ActnList,
+  Vcl.Clipbrd;
 
 type
   TfrmMain = class(TForm)
@@ -210,6 +211,65 @@ type
     mniCopy: TMenuItem;
     mniPaste: TMenuItem;
     N20: TMenuItem;
+    EditorActions: TActionList;
+    NewFile: TAction;
+    OpenFile: TAction;
+    SaveCurrentMap: TAction;
+    SaveCurrentMapAs: TAction;
+    Import: TAction;
+    Export: TAction;
+    edit_Undo: TAction;
+    edit_Redo: TAction;
+    edit_SearchActors: TAction;
+    edit_ActorCut: TAction;
+    edit_ActorCopy: TAction;
+    edit_ActorPaste: TAction;
+    edit_ActorDelete: TAction;
+    edit_ActorDuplicate: TAction;
+    edit_SelectAllActors: TAction;
+    edit_SelectNoneActors: TAction;
+    edit_SelectInvert: TAction;
+    brushAdd: TAction;
+    brushSubtract: TAction;
+    brushIntersect: TAction;
+    brushDeintersect: TAction;
+    ActorReset_moveToOrigin: TAction;
+    ActorReset_Pivot: TAction;
+    ActorReset_Rotation: TAction;
+    ActorReset_Scaling: TAction;
+    ActorReset_All: TAction;
+    edit_SelectInsideBrush: TAction;
+    brushAddMover: TAction;
+    brushAddDeusExMover: TAction;
+    brushAddBreakableGlass: TAction;
+    brushAddBreakableWall: TAction;
+    brushMakeSolid: TAction;
+    brushMakeSemiSolid: TAction;
+    brushMakeNonSolid: TAction;
+    edit_SelectOfClass: TAction;
+    RotationGrid1: TMenuItem;
+    N1024Unitsdefault1: TMenuItem;
+    N512Units1: TMenuItem;
+    N256Units2: TMenuItem;
+    N128Units2: TMenuItem;
+    N64Units2: TMenuItem;
+    N32Units2: TMenuItem;
+    N16Units2: TMenuItem;
+    Withsame1: TMenuItem;
+    WithsameEvent1: TMenuItem;
+    N22: TMenuItem;
+    AllActorswithsameAttachTag1: TMenuItem;
+    SelectAllActorswithsameBindName1: TMenuItem;
+    SelectAllActorswithsameBarkBindName1: TMenuItem;
+    edit_SelectOfSubClass: TAction;
+    edit_SelectOfEvent: TAction;
+    edit_SelectOfTag: TAction;
+    edit_SelectOfAttachTag: TAction;
+    edit_SelectOfBindName: TAction;
+    edit_SelectOfBarkBindName: TAction;
+    subMenu_SelectActors: TMenuItem;
+    InvertSelection2: TMenuItem;
+    Actor_Selected_Properties: TAction;
 
     // new functions
     function CheckEditorPatch(): Boolean;
@@ -242,9 +302,6 @@ type
     procedure sbTextureBrowserClick(Sender: TObject);
     procedure Masterbrowser1Click(Sender: TObject);
     procedure sbScriptEditorClick(Sender: TObject);
-    procedure sbSearchClick(Sender: TObject);
-    procedure sbUndoClick(Sender: TObject);
-    procedure sbRedoClick(Sender: TObject);
     procedure BuildOptions1Click(Sender: TObject);
     procedure DeusExLevelInfoproperties1Click(Sender: TObject);
     procedure Levelproperties1Click(Sender: TObject);
@@ -266,11 +323,6 @@ type
     procedure ActorClassBrowser1Click(Sender: TObject);
     procedure extureBrowser1Click(Sender: TObject);
     procedure SetMoverKeyClick(Sender: TObject);
-    procedure mniMoveToOriginClick(Sender: TObject);
-    procedure mniResetPivotClick(Sender: TObject);
-    procedure mniResetRotationClick(Sender: TObject);
-    procedure mniResetScalingClick(Sender: TObject);
-    procedure mniResetAllPositioningClick(Sender: TObject);
     procedure mniMirrorAboutXClick(Sender: TObject);
     procedure mniMirrorAboutYClick(Sender: TObject);
     procedure mniMirrorAboutZClick(Sender: TObject);
@@ -283,24 +335,38 @@ type
     procedure mniMapSelectSubtractsClick(Sender: TObject);
     procedure mniMapSelectSemiSolidsClick(Sender: TObject);
     procedure mniMapSelectNonSolidsClick(Sender: TObject);
-    procedure mniDuplicateSelectionClick(Sender: TObject);
-    procedure mniDeleteSelectedClick(Sender: TObject);
     procedure mniSelectAllOfTypeClick(Sender: TObject);
-    procedure mniSelectAllActorsClick(Sender: TObject);
-    procedure mniSelectNoneClick(Sender: TObject);
-    procedure mniBrushMakeSolidClick(Sender: TObject);
-    procedure mniBrushMakeSemiSolidClick(Sender: TObject);
-    procedure mniBrushMakeNonSolidClick(Sender: TObject);
-    procedure mniSelectedPropertiesClick(Sender: TObject);
-    procedure mniBrushAddClick(Sender: TObject);
-    procedure mniBrushSubtractClick(Sender: TObject);
-    procedure Intersect1Click(Sender: TObject);
-    procedure DeIntersect1Click(Sender: TObject);
-    procedure AddMover1Click(Sender: TObject);
-    procedure AddDeusExMover1Click(Sender: TObject);
-    procedure mniCutClick(Sender: TObject);
-    procedure mniCopyClick(Sender: TObject);
-    procedure mniPasteClick(Sender: TObject);
+    procedure brushAddExecute(Sender: TObject);
+    procedure brushSubtractExecute(Sender: TObject);
+    procedure brushIntersectExecute(Sender: TObject);
+    procedure brushDeintersectExecute(Sender: TObject);
+    procedure edit_ActorDuplicateExecute(Sender: TObject);
+    procedure edit_ActorDeleteExecute(Sender: TObject);
+    procedure edit_UndoExecute(Sender: TObject);
+    procedure edit_RedoExecute(Sender: TObject);
+    procedure edit_SearchActorsExecute(Sender: TObject);
+    procedure edit_ActorCutExecute(Sender: TObject);
+    procedure edit_ActorCopyExecute(Sender: TObject);
+    procedure edit_ActorPasteExecute(Sender: TObject);
+    procedure edit_SelectAllActorsExecute(Sender: TObject);
+    procedure edit_SelectNoneActorsExecute(Sender: TObject);
+    procedure edit_SelectInvertExecute(Sender: TObject);
+    procedure ActorReset_moveToOriginExecute(Sender: TObject);
+    procedure ActorReset_PivotExecute(Sender: TObject);
+    procedure ActorReset_RotationExecute(Sender: TObject);
+    procedure ActorReset_ScalingExecute(Sender: TObject);
+    procedure ActorReset_AllExecute(Sender: TObject);
+    procedure brushAddDeusExMoverExecute(Sender: TObject);
+    procedure brushAddMoverExecute(Sender: TObject);
+    procedure brushAddBreakableGlassExecute(Sender: TObject);
+    procedure brushAddBreakableWallExecute(Sender: TObject);
+    procedure brushMakeSolidExecute(Sender: TObject);
+    procedure brushMakeSemiSolidExecute(Sender: TObject);
+    procedure brushMakeNonSolidExecute(Sender: TObject);
+    procedure edit_SelectInsideBrushExecute(Sender: TObject);
+    procedure edit_SelectOfClassExecute(Sender: TObject);
+    procedure edit_SelectOfSubClassExecute(Sender: TObject);
+    procedure Actor_Selected_PropertiesExecute(Sender: TObject);
   private
     procedure CreateViewportPanels();
     procedure CreateViewports();
@@ -325,9 +391,8 @@ var
   LogWindowHandle: HWND;
   LogWindowFont: HFONT;
   GIsRequestingExit: Integer;
-  SelectedClassStr: string;
+  vp_SelectedClassStr: string;
   bStartupCheckPassed: Boolean;
-  ServerTask: ITask;
 
 
 const
@@ -354,7 +419,6 @@ begin
     GetCursorPos(MouseCoords);
 
     case Value - 32 of
-        EDC_None:   ShowMessage('Do Nothing');
         EDC_Browse:   ShowMessage('Browse item');
         EDC_UseCurrent:   ShowMessage('Use current item');
         EDC_CurTexChange:  ShowMessage('Current texture changed');
@@ -377,7 +441,7 @@ begin
             var NumSelected := NumSelectedActors();
             var bIsBrush := SelectedIsBrush();
             var bIsMover := SelectedIsMover();
-            SelectedClassStr := GetSelectedClass();
+            vp_SelectedClassStr := GetSelectedClass();
 
             mnuMoverKeys.Visible := bIsMover;
             mnuTransform.Visible := bIsBrush;
@@ -386,10 +450,17 @@ begin
             mnuBrushSolidity.Visible := bIsBrush;
             mnuSelectBrushes.Visible := bIsBrush;
 
-            if SelectedClassStr <> '' then // ¬ыбрано несколько акторов одного класса
+            if NumSelected = 1 then
             begin
-                mniSelectedProperties.Caption := Format('%s properties (%d selected)...', [SelectedClassStr, NumSelected]);
-                mniSelectAllOfType.Caption := Format('Select All "%s" actors', [SelectedClassStr]);
+                ServerCmd('EDIT COPY'); // Right now this is the only way to get actor fields and values
+
+            end;
+
+
+            if vp_SelectedClassStr <> '' then // ¬ыбрано несколько акторов одного класса
+            begin
+                mniSelectedProperties.Caption := Format('%s properties (%d selected)...', [vp_SelectedClassStr, NumSelected]);
+                mniSelectAllOfType.Caption := Format('Select All "%s" actors', [vp_SelectedClassStr]);
                 mniSelectAllOfType.Visible := True;
                 mniEditScript.Visible := True;
             end
@@ -435,51 +506,6 @@ begin
     end;
 end;
 
-procedure TfrmMain.mniBrushAddClick(Sender: TObject);
-begin
-    ServerCmd('BRUSH ADD');
-end;
-
-procedure TfrmMain.mniBrushMakeNonSolidClick(Sender: TObject);
-begin
-    ServerCmd('MAP SETBRUSH CLEARFLAGS=' + Trim(IntToStr(PF_SEMISOLID + PF_NOTSOLID)) + ' SETFLAGS=' + Trim(IntToStr(PF_NOTSOLID)));
-end;
-
-procedure TfrmMain.mniBrushMakeSemiSolidClick(Sender: TObject);
-begin
-    ServerCmd('MAP SETBRUSH CLEARFLAGS=' + Trim(IntToStr(PF_SEMISOLID + PF_NOTSOLID)) + ' SETFLAGS=' + Trim(IntToStr(PF_SEMISOLID)));
-end;
-
-procedure TfrmMain.mniBrushMakeSolidClick(Sender: TObject);
-begin
-    ServerCmd('MAP SETBRUSH CLEARFLAGS=' + Trim(IntToStr(PF_SEMISOLID + PF_NOTSOLID)) + ' SETFLAGS=' + Trim(IntToStr(0)));
-end;
-
-procedure TfrmMain.mniBrushSubtractClick(Sender: TObject);
-begin
-    ServerCmd('BRUSH SUBTRACT');
-end;
-
-procedure TfrmMain.mniCopyClick(Sender: TObject);
-begin
-    ServerCmd('EDIT COPY"');
-end;
-
-procedure TfrmMain.mniCutClick(Sender: TObject);
-begin
-    ServerCmd('EDIT CUT');
-end;
-
-procedure TfrmMain.mniDeleteSelectedClick(Sender: TObject);
-begin
-    ServerCmd('ACTOR DELETE');
-end;
-
-procedure TfrmMain.DeIntersect1Click(Sender: TObject);
-begin
-    ServerCmd('BRUSH FROM DEINTERSECTION');
-end;
-
 procedure TfrmMain.DeusExLevelInfoproperties1Click(Sender: TObject);
 begin
     ServerCmd('EDITACTOR CLASS=DeusExLevelInfo');
@@ -501,9 +527,77 @@ begin
     SystemParametersInfo(SPI_SETMOUSE, 0, @MouseParams, SPIF_SENDCHANGE);
 end;
 
-procedure TfrmMain.mniDuplicateSelectionClick(Sender: TObject);
+procedure TfrmMain.edit_ActorCopyExecute(Sender: TObject);
+begin
+    ServerCmd('EDIT COPY"');
+end;
+
+procedure TfrmMain.edit_ActorCutExecute(Sender: TObject);
+begin
+    ServerCmd('EDIT CUT');
+end;
+
+procedure TfrmMain.edit_ActorDeleteExecute(Sender: TObject);
+begin
+    ServerCmd('ACTOR DELETE');
+end;
+
+procedure TfrmMain.edit_ActorDuplicateExecute(Sender: TObject);
 begin
     ServerCmd('ACTOR DUPLICATE');
+end;
+
+procedure TfrmMain.edit_ActorPasteExecute(Sender: TObject);
+begin
+    ServerCmd('EDIT PASTE');
+end;
+
+procedure TfrmMain.edit_RedoExecute(Sender: TObject);
+begin
+    ServerCmd('TRANSACTION REDO');
+end;
+
+procedure TfrmMain.edit_SearchActorsExecute(Sender: TObject);
+begin
+    var bEditorPatchPresent := CheckEditorPatch();
+
+    if bEditorPatchPresent = True then
+        ServerCmd('ACTOR SEARCH');
+end;
+
+procedure TfrmMain.edit_SelectAllActorsExecute(Sender: TObject);
+begin
+    ServerCmd('ACTOR SELECT ALL');
+end;
+
+procedure TfrmMain.edit_SelectInsideBrushExecute(Sender: TObject);
+begin
+    ServerCmd('ACTOR SELECT INSIDE');
+end;
+
+procedure TfrmMain.edit_SelectInvertExecute(Sender: TObject);
+begin
+    ServerCmd('ACTOR SELECT INVERT');
+end;
+
+procedure TfrmMain.edit_SelectNoneActorsExecute(Sender: TObject);
+begin
+    ServerCmd('SELECT NONE');
+end;
+
+procedure TfrmMain.edit_SelectOfClassExecute(Sender: TObject);
+begin
+    SelectActorsOfClass(vp_SelectedClassStr);
+end;
+
+procedure TfrmMain.edit_SelectOfSubClassExecute(Sender: TObject);
+begin
+    SelectOfSubClass(vp_SelectedClassStr);
+end;
+
+procedure TfrmMain.edit_UndoExecute(Sender: TObject);
+begin
+    ServerCmd('TRANSACTION UNDO');
 end;
 
 procedure TfrmMain.extureBrowser1Click(Sender: TObject);
@@ -665,14 +759,34 @@ begin
     frmClassBrowser.Show();
 end;
 
-procedure TfrmMain.AddDeusExMover1Click(Sender: TObject);
+procedure TfrmMain.ActorReset_AllExecute(Sender: TObject);
 begin
-    ServerCmd('BRUSH ADDMOVER CLASS=DeusExMover');
+    ServerCmd('ACTOR RESET ALL');
 end;
 
-procedure TfrmMain.AddMover1Click(Sender: TObject);
+procedure TfrmMain.ActorReset_moveToOriginExecute(Sender: TObject);
 begin
-    ServerCmd('BRUSH ADDMOVER');
+    ServerCmd('ACTOR RESET LOCATION');
+end;
+
+procedure TfrmMain.ActorReset_PivotExecute(Sender: TObject);
+begin
+    ServerCmd('ACTOR RESET PIVOT');
+end;
+
+procedure TfrmMain.ActorReset_RotationExecute(Sender: TObject);
+begin
+    ServerCmd('ACTOR RESET ROTATION');
+end;
+
+procedure TfrmMain.ActorReset_ScalingExecute(Sender: TObject);
+begin
+    ServerCmd('ACTOR RESET SCALE');
+end;
+
+procedure TfrmMain.Actor_Selected_PropertiesExecute(Sender: TObject);
+begin
+    ServerCmd('HOOK ACTORPROPERTIES');
 end;
 
 procedure TfrmMain.AdvancedOptions1Click(Sender: TObject);
@@ -690,6 +804,61 @@ procedure TfrmMain.bbSheetMouseDown(Sender: TObject; Button: TMouseButton; Shift
 begin
     if Button = TMouseButton.mbRight then
         frmBrushBuilder.ShowBuilder(bmSheet);
+end;
+
+procedure TfrmMain.brushAddBreakableGlassExecute(Sender: TObject);
+begin
+    ServerCmd('BRUSH ADDMOVER CLASS=BreakableGlass');
+end;
+
+procedure TfrmMain.brushAddBreakableWallExecute(Sender: TObject);
+begin
+    ServerCmd('BRUSH ADDMOVER CLASS=BreakableWall');
+end;
+
+procedure TfrmMain.brushAddDeusExMoverExecute(Sender: TObject);
+begin
+    ServerCmd('BRUSH ADDMOVER CLASS=DeusExMover');
+end;
+
+procedure TfrmMain.brushAddExecute(Sender: TObject);
+begin
+    ServerCmd('BRUSH ADD');
+end;
+
+procedure TfrmMain.brushAddMoverExecute(Sender: TObject);
+begin
+    ServerCmd('BRUSH ADDMOVER');
+end;
+
+procedure TfrmMain.brushDeintersectExecute(Sender: TObject);
+begin
+    ServerCmd('BRUSH FROM DEINTERSECTION');
+end;
+
+procedure TfrmMain.brushIntersectExecute(Sender: TObject);
+begin
+    ServerCmd('BRUSH FROM INTERSECTION');
+end;
+
+procedure TfrmMain.brushMakeNonSolidExecute(Sender: TObject);
+begin
+    ServerCmd('MAP SETBRUSH CLEARFLAGS=' + Trim(IntToStr(PF_SEMISOLID + PF_NOTSOLID)) + ' SETFLAGS=' + Trim(IntToStr(PF_NOTSOLID)));
+end;
+
+procedure TfrmMain.brushMakeSemiSolidExecute(Sender: TObject);
+begin
+    ServerCmd('MAP SETBRUSH CLEARFLAGS=' + Trim(IntToStr(PF_SEMISOLID + PF_NOTSOLID)) + ' SETFLAGS=' + Trim(IntToStr(PF_SEMISOLID)));
+end;
+
+procedure TfrmMain.brushMakeSolidExecute(Sender: TObject);
+begin
+    ServerCmd('MAP SETBRUSH CLEARFLAGS=' + Trim(IntToStr(PF_SEMISOLID + PF_NOTSOLID)) + ' SETFLAGS=' + Trim(IntToStr(0)));
+end;
+
+procedure TfrmMain.brushSubtractExecute(Sender: TObject);
+begin
+    ServerCmd('BRUSH SUBTRACT');
 end;
 
 procedure TfrmMain.Levelproperties1Click(Sender: TObject);
@@ -722,11 +891,6 @@ begin
     ServerCmd('ACTOR MIRROR Z=-1');
 end;
 
-procedure TfrmMain.mniMoveToOriginClick(Sender: TObject);
-begin
-    ServerCmd('ACTOR RESET LOCATION');
-end;
-
 procedure TfrmMain.mniOrderToFirstClick(Sender: TObject);
 begin
     ServerCmd('MAP SENDTO FIRST');
@@ -737,11 +901,6 @@ begin
     ServerCmd('MAP SENDTO LAST');
 end;
 
-procedure TfrmMain.mniPasteClick(Sender: TObject);
-begin
-    ServerCmd('EDIT PASTE');
-end;
-
 procedure TfrmMain.mniPolysFromBrushClick(Sender: TObject);
 begin
     ServerCmd('MAP BRUSH PUT');
@@ -750,21 +909,6 @@ end;
 procedure TfrmMain.mniPolysToBrushClick(Sender: TObject);
 begin
     ServerCmd('MAP BRUSH GET');
-end;
-
-procedure TfrmMain.mniResetPivotClick(Sender: TObject);
-begin
-    ServerCmd('ACTOR RESET PIVOT');
-end;
-
-procedure TfrmMain.mniResetRotationClick(Sender: TObject);
-begin
-    ServerCmd('ACTOR RESET ROTATION');
-end;
-
-procedure TfrmMain.mniResetScalingClick(Sender: TObject);
-begin
-    ServerCmd('ACTOR RESET SCALE');
 end;
 
 procedure TfrmMain.mniTransformPermanentlyClick(Sender: TObject);
@@ -908,11 +1052,6 @@ begin
     end);
 end;
 
-procedure TfrmMain.mniResetAllPositioningClick(Sender: TObject);
-begin
-    ServerCmd('ACTOR RESET ALL');
-end;
-
 procedure TfrmMain.InitEditorServer();
 begin
     GIsRequestingExit := Get_GIsRequestingExit();
@@ -925,8 +1064,6 @@ begin
     ServerCmd(SetupProgressBar);
 
     ServerCmd('HIDELOG');
-    ServerCmd('MAP GRID X=16 Y=16 Z=16 BASE=ABSOLUTE SHOW2D=ON SHOW3D=OFF');
-    ServerCmd('MAP ROTGRID PITCH=4 YAW=4 ROLL=4');
     ServerCmd('MODE CAMERAMOVE GRID=ON ROTGRID=ON SNAPTOPIVOT=ON SNAPDIST=10');
 
     ReplaceLogWindowFont();
@@ -944,11 +1081,6 @@ begin
     OnResize := FormResize;
 
     frmTextures.OnCreate := frmTextures.FormCreate;
-end;
-
-procedure TfrmMain.Intersect1Click(Sender: TObject);
-begin
-    ServerCmd('BRUSH FROM INTERSECTION');
 end;
 
 procedure TfrmMain.sbActorBrowserClick(Sender: TObject);
@@ -987,14 +1119,6 @@ begin
     frmScriptEditor.Show();
 end;
 
-procedure TfrmMain.sbSearchClick(Sender: TObject);
-begin
-    var bEditorPatchPresent := CheckEditorPatch();
-
-    if bEditorPatchPresent = True then
-        ServerCmd('ACTOR SEARCH');
-end;
-
 procedure TfrmMain.sbSnapBrushStretchClick(Sender: TObject);
 begin
     ServerCmd('MODE BRUSHSNAP');
@@ -1015,19 +1139,9 @@ begin
     ServerCmd('MODE TEXTUREROTATE');
 end;
 
-procedure TfrmMain.sbUndoClick(Sender: TObject);
-begin
-    ServerCmd('TRANSACTION UNDO');
-end;
-
 procedure TfrmMain.sbViewportMoveClick(Sender: TObject);
 begin
     ServerCmd('MODE CAMERAMOVE');
-end;
-
-procedure TfrmMain.sbRedoClick(Sender: TObject);
-begin
-    ServerCmd('TRANSACTION REDO');
 end;
 
 procedure TfrmMain.mniMapSelectSemiSolidsClick(Sender: TObject);
@@ -1038,21 +1152,6 @@ end;
 procedure TfrmMain.mniSelectAllOfTypeClick(Sender: TObject);
 begin
     ServerCmd('ACTOR SELECT OFCLASS CLASS=');
-end;
-
-procedure TfrmMain.mniSelectedPropertiesClick(Sender: TObject);
-begin
-    ServerCmd('HOOK ACTORPROPERTIES');
-end;
-
-procedure TfrmMain.mniSelectAllActorsClick(Sender: TObject);
-begin
-    ServerCmd('ACTOR SELECT ALL');
-end;
-
-procedure TfrmMain.mniSelectNoneClick(Sender: TObject);
-begin
-    ServerCmd('SELECT NONE');
 end;
 
 procedure TfrmMain.ServerSetCurrentClass1Click(Sender: TObject);
