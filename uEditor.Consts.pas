@@ -12,7 +12,7 @@ const EditorPatchFileNames: array[0..5] of string = // To check if Hanfling's Ed
     'RenderExt.int'
 );
 
-const FilterPackages: array[0..7] of string = // Don't show these packages in Actor class browser
+const FilterPackages: array[0..8] of string = // Don't show these packages in Actor class browser
 (
     'OpenGLDrv',
     'SoftDrv',
@@ -21,9 +21,12 @@ const FilterPackages: array[0..7] of string = // Don't show these packages in Ac
     'D3D9Drv',
     'D3DDrv',
     'Window',
-    'WinDrv'
+    'WinDrv',
+    'RenderExt'
 );
 
+const DXEditPlusIniFile = 'DXEditPlus.ini';
+const MAX_RECENT_FILES = 9; // like in ConEditPlus, actually 10
 
 
 implementation

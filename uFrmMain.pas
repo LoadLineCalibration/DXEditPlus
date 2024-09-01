@@ -212,12 +212,12 @@ type
     mniPaste: TMenuItem;
     N20: TMenuItem;
     EditorActions: TActionList;
-    NewFile: TAction;
-    OpenFile: TAction;
-    SaveCurrentMap: TAction;
-    SaveCurrentMapAs: TAction;
-    Import: TAction;
-    Export: TAction;
+    file_NewFile: TAction;
+    file_OpenFile: TAction;
+    file_SaveCurrentMap: TAction;
+    file_SaveCurrentMapAs: TAction;
+    file_Import: TAction;
+    file_Export: TAction;
     edit_Undo: TAction;
     edit_Redo: TAction;
     edit_SearchActors: TAction;
@@ -284,6 +284,8 @@ type
     procedure ReplaceLogWindowFont();
     procedure ShowLogWindow();
     procedure StartupCheck();
+    procedure LoadCfg();
+    procedure SaveCfg();
 
 
     procedure BuildCube();
@@ -367,11 +369,18 @@ type
     procedure edit_SelectOfClassExecute(Sender: TObject);
     procedure edit_SelectOfSubClassExecute(Sender: TObject);
     procedure Actor_Selected_PropertiesExecute(Sender: TObject);
+    procedure edit_SelectOfEventExecute(Sender: TObject);
+    procedure edit_SelectOfTagExecute(Sender: TObject);
+    procedure edit_SelectOfAttachTagExecute(Sender: TObject);
+    procedure edit_SelectOfBindNameExecute(Sender: TObject);
+    procedure edit_SelectOfBarkBindNameExecute(Sender: TObject);
   private
     procedure CreateViewportPanels();
     procedure CreateViewports();
     procedure FitViewportsToWindow();
     procedure HandleCallback(Value: Integer);
+    procedure WMNCActivate(var Msg: TWMNCActivate); message WM_NCACTIVATE;
+    procedure WMActivate(var Msg: TWMActivate); message WM_ACTIVATE;
   protected
     procedure WndProc(var Msg: TMessage); override;
     { Private declarations }
@@ -391,8 +400,15 @@ var
   LogWindowHandle: HWND;
   LogWindowFont: HFONT;
   GIsRequestingExit: Integer;
-  vp_SelectedClassStr: string;
+  vp_SelectedClassStr: string; // something is selected in ViewPort
+  vp_SelectedClassName: string;
+  vp_SelectedClassEvent: string;
+  vp_SelectedClassTag: string;
+  vp_SelectedClassAttachTag: string;
+  vp_SelectedClassBindName: string;
+  vp_SelectedClassBarkBindName: string;
   bStartupCheckPassed: Boolean;
+  bAlwaysActive: Boolean = False;
 
 
 const
@@ -438,9 +454,10 @@ begin
 
         EDC_RtClickActor:
         begin
-            var NumSelected := NumSelectedActors();
             var bIsBrush := SelectedIsBrush();
             var bIsMover := SelectedIsMover();
+            var TempData: string;
+            var NumSelected := NumSelectedActors();
             vp_SelectedClassStr := GetSelectedClass();
 
             mnuMoverKeys.Visible := bIsMover;
@@ -453,24 +470,85 @@ begin
             if NumSelected = 1 then
             begin
                 ServerCmd('EDIT COPY'); // Right now this is the only way to get actor fields and values
+                try
+                    TempData := Clipboard.AsText;
+                except
+                    TempData := '';
+                end;
 
+                if TempData <> '' then
+                begin
+                    vp_SelectedClassName := uEditorLoader.GetActorName(TempData);
+                    vp_SelectedClassEvent := uEditorLoader.GetActorEvent(TempData);
+                    vp_SelectedClassTag := uEditorLoader.GetActorTag(TempData);
+                    vp_SelectedClassAttachTag := uEditorLoader.GetActorAttachTag(TempData);
+                    vp_SelectedClassBindName := uEditorLoader.GetActorBindName(TempData);
+                    vp_SelectedClassBarkBindName := uEditorLoader.GetActorBarkBindName(TempData);
+                end;
+            end
+            else
+            begin
+                vp_SelectedClassName := '';
+                vp_SelectedClassEvent := '';
+                vp_SelectedClassTag := '';
+                vp_SelectedClassAttachTag := '';
+                vp_SelectedClassBindName := '';
+                vp_SelectedClassBarkBindName := '';
             end;
-
 
             if vp_SelectedClassStr <> '' then // Выбрано несколько акторов одного класса
             begin
-                mniSelectedProperties.Caption := Format('%s properties (%d selected)...', [vp_SelectedClassStr, NumSelected]);
-                mniSelectAllOfType.Caption := Format('Select All "%s" actors', [vp_SelectedClassStr]);
-                mniSelectAllOfType.Visible := True;
-                mniEditScript.Visible := True;
+                if NumSelected = 1 then
+                begin
+                    if vp_SelectedClassName <> '' then // Есть имя, отображаем его
+                        Actor_Selected_Properties.Caption := Format(strPropertiesNumSelected, [vp_SelectedClassName, NumSelected])
+                    else // Нету? Тогда название класса.
+                        Actor_Selected_Properties.Caption := Format(strPropertiesNumSelected, [vp_SelectedClassStr, NumSelected]);
+
+                    edit_SelectOfClass.Caption := Format(strSelectAllType, [vp_SelectedClassStr]);
+                    edit_SelectOfSubClass.Caption := Format(strSelectWithSubClases, [vp_SelectedClassStr]);
+
+                    edit_SelectOfEvent.Visible := vp_SelectedClassEvent <> '';
+                    if vp_SelectedClassEvent <> '' then edit_SelectOfEvent.Caption := Format(strSelectWithSameEvent, [vp_SelectedClassEvent]);
+
+                    edit_SelectOfTag.Visible := vp_SelectedClassTag <> '';
+                    if vp_SelectedClassTag <> '' then edit_SelectOfTag.Caption := Format(strSelectWithSameTag, [vp_SelectedClassTag]);
+
+                    edit_SelectOfAttachTag.Visible := vp_SelectedClassAttachTag <> '';
+                    if vp_SelectedClassAttachTag <> '' then edit_SelectOfAttachTag.Caption := Format(strSelectWithSameAttachTag, [vp_SelectedClassAttachTag]);
+
+                    edit_SelectOfBindName.Visible := vp_SelectedClassBindName <> '';
+                    if vp_SelectedClassBindName <> '' then edit_SelectOfBindName.Caption := Format(strSelectWithSameBindName, [vp_SelectedClassBindName]);
+
+                    edit_SelectOfBarkBindName.Visible := vp_SelectedClassBarkBindName <> '';
+                    if vp_SelectedClassBarkBindName <> '' then edit_SelectOfBarkBindName.Caption := Format(strSelectWithSameBarkBindName, [vp_SelectedClassBarkBindName]);
+                end
+                else if NumSelected > 1 then
+                begin
+                    Actor_Selected_Properties.Caption := Format(strPropertiesNumSelected, [vp_SelectedClassStr, NumSelected]);
+
+                    edit_SelectOfClass.Caption := Format(strSelectAllType, [vp_SelectedClassStr]); // Выбрать все акторы такого-же класса
+                    edit_SelectOfClass.Visible := True;
+
+                    edit_SelectOfSubClass.Caption := Format(strSelectWithSubClases, [vp_SelectedClassStr]);
+                    edit_SelectOfSubClass.Visible := True;
+
+                    mniEditScript.Visible := True; // Можно просмотреть скрипт.
+                end;
             end
             else
             begin // Выбраны разные классы
-                mniSelectedProperties.Caption := Format('Actor properties (%d selected)...', [NumSelected]);
-                mniSelectAllOfType.Visible := False;
-                mniEditScript.Visible := False;
-            end;
+                Actor_Selected_Properties.Caption := Format(strPropertiesDifferentSelected, [NumSelected]);
+                edit_SelectOfClass.Visible := False; // Выбрать все акторы такого-же класса недоступна
+                edit_SelectOfSubClass.Visible := False;
+                edit_SelectOfEvent.Visible := False;
+                edit_SelectOfTag.Visible := False;
+                edit_SelectOfAttachTag.Visible := False;
+                edit_SelectOfBindName.Visible := False;
+                edit_SelectOfBarkBindName.Visible := False;
 
+                mniEditScript.Visible := False; // Скрыть команду просмотра скрипта
+            end;
 
             ActorSelectedPopup.Popup(MouseCoords.X, MouseCoords.Y);
         end;
@@ -585,14 +663,39 @@ begin
     ServerCmd('SELECT NONE');
 end;
 
+procedure TfrmMain.edit_SelectOfAttachTagExecute(Sender: TObject);
+begin
+    uEditorLoader.SelectOfAttachTag(vp_SelectedClassAttachTag);
+end;
+
+procedure TfrmMain.edit_SelectOfBarkBindNameExecute(Sender: TObject);
+begin
+    uEditorLoader.SelectOfBarkBindName(vp_SelectedClassBarkBindName);
+end;
+
+procedure TfrmMain.edit_SelectOfBindNameExecute(Sender: TObject);
+begin
+    uEditorLoader.SelectOfBindName(vp_SelectedClassBindName);
+end;
+
 procedure TfrmMain.edit_SelectOfClassExecute(Sender: TObject);
 begin
-    SelectActorsOfClass(vp_SelectedClassStr);
+    uEditorLoader.SelectActorsOfClass(vp_SelectedClassStr);
+end;
+
+procedure TfrmMain.edit_SelectOfEventExecute(Sender: TObject);
+begin
+    uEditorLoader.SelectOfEvent(vp_SelectedClassEvent);
 end;
 
 procedure TfrmMain.edit_SelectOfSubClassExecute(Sender: TObject);
 begin
-    SelectOfSubClass(vp_SelectedClassStr);
+    uEditorLoader.SelectOfSubClass(vp_SelectedClassStr);
+end;
+
+procedure TfrmMain.edit_SelectOfTagExecute(Sender: TObject);
+begin
+    uEditorLoader.SelectOfTag(vp_SelectedClassTag);
 end;
 
 procedure TfrmMain.edit_UndoExecute(Sender: TObject);
@@ -728,12 +831,16 @@ end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+    SaveCfg();
     DeleteObject(LogWindowFont);
     EdExitServer();
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
+    Application.Title := 'DXEDitPlus';
+    frmMain.Caption := Application.Title;
+
     StartupCheck();
 
     if bStartupCheckPassed = True then
@@ -1081,6 +1188,7 @@ begin
     OnResize := FormResize;
 
     frmTextures.OnCreate := frmTextures.FormCreate;
+    LoadCfg();
 end;
 
 procedure TfrmMain.sbActorBrowserClick(Sender: TObject);
@@ -1308,13 +1416,59 @@ begin
             Application.Terminate();
         end
         else bStartupCheckPassed := True;
+    end;
+end;
 
+procedure TfrmMain.LoadCfg();
+begin
+    var DXEditPlusIni := TIniFile.Create(ExtractFilePath(ParamStr(0)) + uEditor.Consts.DXEditPlusIniFile);
+    try
+    with DXEditPlusIni do
+    begin
+       // Main Form
+       Height := ReadInteger('Settings', 'frmMain.Height', 600); // maybe 640x480? :D
+       Width := ReadInteger('Settings', 'frmMain.Width', 800);
+
+       Left := ReadInteger('Settings', 'frmMain.Left', 0);
+       Top := ReadInteger('Settings', 'frmMain.Top', 0);
+    end;
+
+    finally
+       DXEditPlusIni.Free();
+    end;
+end;
+
+procedure TfrmMain.SaveCfg();
+begin
+    var DXEditPlusIni := TIniFile.Create(ExtractFilePath(ParamStr(0)) + uEditor.Consts.DXEditPlusIniFile);
+    try
+    with DXEditPlusIni do
+        begin
+            WriteInteger('Settings', 'frmMain.Height', Height);
+            WriteInteger('Settings', 'frmMain.Width', Width);
+
+            WriteInteger('Settings', 'frmMain.Left', Left);
+            WriteInteger('Settings', 'frmMain.Top', Top);
+        end;
+
+    finally
+        DXEditPlusIni.Free();
     end;
 end;
 
 procedure TfrmMain.mniMapSelectSubtractsClick(Sender: TObject);
 begin
     ServerCmd('MAP SELECT SUBTRACTS');
+end;
+
+procedure TfrmMain.WMNCActivate(var Msg: TWMNCActivate);
+begin
+    inherited;
+end;
+
+procedure TfrmMain.WMActivate(var Msg: TWMActivate);
+begin
+    inherited;
 end;
 
 procedure TfrmMain.WndProc(var Msg: TMessage);
