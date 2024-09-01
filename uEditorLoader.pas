@@ -3,7 +3,7 @@ unit uEditorLoader;
 interface
 
 uses
-    WinAPI.Windows, System.SysUtils, System.StrUtils, System.Classes, uEditor.Consts;
+    WinAPI.Windows, System.SysUtils, System.StrUtils, System.Classes, System.RegularExpressions, uEditor.Consts;
 
 procedure EdInitServer(hWndMain: HWND; hWndCallback: HWND); stdcall; external 'Editor.dll' name '_EdInitServer@8';
 procedure EdExitServer; stdcall; external 'Editor.dll' name '_EdExitServer@0';
@@ -29,12 +29,13 @@ function Get_GIsRequestingExit(): Integer;
 function DynamicFindClass(const SearchText: string): string;
 function DynamicFindClassInChildren(const ParentClass: string; const SearchText: string): string;
 
-function GetActorEvent(): string;
-function GetActorTag(): string;
-function GetActorName(): string;
-function GetActorAttachTag(): string;
-function GetActorBindName(): string;
-function GetActorBarkBindName(): string;
+function ExtractField(const fieldName, text: string): string;
+function GetActorEvent(const TextToProcess: string): string;
+function GetActorTag(const TextToProcess: string): string;
+function GetActorName(const TextToProcess: string): string;
+function GetActorAttachTag(const TextToProcess: string): string;
+function GetActorBindName(const TextToProcess: string): string;
+function GetActorBarkBindName(const TextToProcess: string): string;
 
 procedure ServerSetCurrentClass(const NewClass: string);
 procedure SetGridSize(const NewValue: Integer);
@@ -278,34 +279,68 @@ begin
     end;
 end;
 
-function GetActorEvent(): string;
+function ExtractField(const fieldName, text: string): string;
+var
+    posStart, posEnd: Integer;
+    fieldLen: Integer;
 begin
-//
+    Result := '';
+    fieldLen := Length(fieldName);
+    posStart := Pos(fieldName + '=', text);
+
+    if posStart > 0 then
+    begin
+        posStart := posStart + fieldLen + 1; // Move position after '='
+
+        if (posStart <= Length(text)) and (text[posStart] = '"') then
+        begin
+            Inc(posStart); // Skip the starting quote
+            posEnd := PosEx('"', text, posStart);
+
+            if posEnd > 0 then
+              Result := Copy(text, posStart, posEnd - posStart);
+        end
+        else
+        begin
+            posEnd := PosEx(#13#10, text, posStart);
+
+            if posEnd = 0 then
+              posEnd := Length(text) + 1;
+
+            Result := Copy(text, posStart, posEnd - posStart);
+            Result := Trim(Result); // Trim only if necessary
+        end;
+    end;
 end;
 
-function GetActorTag(): string;
+function GetActorEvent(const TextToProcess: string): string;
 begin
-//
+    Result := ExtractField('Event', TextToProcess);
 end;
 
-function GetActorName(): string;
+function GetActorTag(const TextToProcess: string): string;
 begin
-//
+    Result := ExtractField('Tag', TextToProcess);
 end;
 
-function GetActorAttachTag(): string;
+function GetActorName(const TextToProcess: string): string;
 begin
-//
+    Result := ExtractField('Name', TextToProcess);
 end;
 
-function GetActorBindName(): string;
+function GetActorAttachTag(const TextToProcess: string): string;
 begin
-//
+    Result := ExtractField('AttachTag', TextToProcess);
 end;
 
-function GetActorBarkBindName(): string;
+function GetActorBindName(const TextToProcess: string): string;
 begin
-  //
+    Result := ExtractField('BindName', TextToProcess);
+end;
+
+function GetActorBarkBindName(const TextToProcess: string): string;
+begin
+    Result := ExtractField('BarkBindName', TextToProcess);
 end;
 
 procedure ServerSetCurrentClass(const NewClass: string);
