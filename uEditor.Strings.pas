@@ -29,8 +29,24 @@ resourcestring
 
     // Error messages
     strCannotFindEditPack = 'Can''t find edit package "%s". Cannot continue. Editor will be closed.';
+    strCannotFindEditPackMany = 'Can''t find edit packages:' + #13#10#13#10 + '%s' + #13#10 + 'Cannot continue. Editor will be closed.';
+
     strCannotFindEditPackSrc = 'Can''t find edit package "%s", but sources of this package has been found in "%s".' + #13#10#13#10 +
                                'Rebuild this package and relaunch the editor.';
+
+    strCannotFindEditPackTitle = 'Error: missing package';
+    strCannotFindEditPacksTitle = 'Error: missing packages';
+
+    // Select actors/brushes...
+    strPropertiesDifferentSelected = 'Actor properties (%d selected)...';
+    strPropertiesNumSelected = '%s properties (%d selected)...';
+    strSelectAllType = 'Select All %s';
+    strSelectWithSubClases = 'Select All Actors of this class (%s) incl. subclasses';
+    strSelectWithSameEvent = 'Select All Actors with same Event (%s)';
+    strSelectWithSameTag = 'Select All Actors with same Tag (%s)';
+    strSelectWithSameAttachTag = 'Select All Actors with same AttachTag (%s)';
+    strSelectWithSameBindName = 'Select All Actors with same BindName (%s)';
+    strSelectWithSameBarkBindName = 'Select All Actors with same BarkBindName (%s)';
 
 
 implementation
