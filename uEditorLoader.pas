@@ -3,7 +3,7 @@ unit uEditorLoader;
 interface
 
 uses
-    WinAPI.Windows, System.SysUtils, System.StrUtils, System.Classes, System.RegularExpressions, uEditor.Consts;
+    WinAPI.Windows, System.SysUtils, System.StrUtils, System.Classes, System.Math, uEditor.Consts;
 
 procedure EdInitServer(hWndMain: HWND; hWndCallback: HWND); stdcall; external 'Editor.dll' name '_EdInitServer@8';
 procedure EdExitServer; stdcall; external 'Editor.dll' name '_EdExitServer@0';
@@ -20,6 +20,7 @@ procedure ServerSetProp(const Topic, Item, Value: string); // Topic = Объект, It
 // Utilities
 function ExtractCommaString(var S: string): string;
 function NumSelectedActors(): Integer;
+function NumSelectedPolys(): Integer;
 function SelectedIsMover(): Boolean;
 function SelectedIsBrush(): Boolean;
 function SelectedIsChildOf(className: string): Boolean;
@@ -42,6 +43,7 @@ procedure SetGridSize(const NewValue: Integer);
 procedure SetRotGridSize(const NewValue: Integer);
 procedure SetMoverKeyFrame(const NewKey: Integer);
 procedure SelectActorsOfClass(const NewClass: string);
+procedure RotateTexture(Angle: Double); // Школьная романтика
 
 // New commands from Hanflings's EditorPatch
 procedure SelectOfSubClass(const NewClass: string); // 	Works like the SELECT OFCLASS command, but includes subclasses as well.
@@ -111,6 +113,11 @@ end;
 function NumSelectedActors(): Integer;
 begin
     Result := StrToInt(ServerGetProp('Actor', 'NumSelected'));
+end;
+
+function NumSelectedPolys(): Integer;
+begin
+    Result := StrToInt(ServerGetProp('Polys', 'NumSelected'));
 end;
 
 function SelectedIsMover(): Boolean;
@@ -287,26 +294,21 @@ begin
     Result := '';
     fieldLen := Length(fieldName);
     posStart := Pos(fieldName + '=', text);
-
     if posStart > 0 then
     begin
         posStart := posStart + fieldLen + 1; // Move position after '='
-
         if (posStart <= Length(text)) and (text[posStart] = '"') then
         begin
             Inc(posStart); // Skip the starting quote
             posEnd := PosEx('"', text, posStart);
-
             if posEnd > 0 then
               Result := Copy(text, posStart, posEnd - posStart);
         end
         else
         begin
             posEnd := PosEx(#13#10, text, posStart);
-
             if posEnd = 0 then
               posEnd := Length(text) + 1;
-
             Result := Copy(text, posStart, posEnd - posStart);
             Result := Trim(Result); // Trim only if necessary
         end;
@@ -372,6 +374,25 @@ procedure SelectActorsOfClass(const NewClass: string);
 begin
     ServerCmd(Format('ACTOR SELECT OFCLASS CLASS=%s', [NewClass]));
 end;
+
+procedure RotateTexture(Angle: Double);
+var
+    Radians, CosTheta, SinTheta: Double;
+    Command: string;
+begin
+    // Перевод угла в радианы
+    Radians := DegToRad(Angle);
+
+    // Вычисляем косинус и синус угла
+    CosTheta := Cos(Radians);
+    SinTheta := Sin(Radians);
+
+    // Формируем команду для отправки на сервер
+    Command := Format('POLY TEXMULT UU=%f VV=%f UV=%f VU=%f', [CosTheta, CosTheta, SinTheta, -SinTheta]);
+
+    ServerCmd(Command);
+end;
+
 
 procedure SelectOfSubClass(const NewClass: string); // 	Works like the SELECT OFCLASS command, but includes subclasses as well.
 begin
