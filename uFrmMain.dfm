@@ -701,8 +701,8 @@ object frmMain: TfrmMain
     end
   end
   object ViewportPopup: TPopupMenu
-    Left = 392
-    Top = 304
+    Left = 316
+    Top = 472
     object AddLighthere1: TMenuItem
       Caption = 'Add Light here'
     end
@@ -3704,11 +3704,13 @@ object frmMain: TfrmMain
     object brushAdd: TAction
       Category = 'Brush'
       Caption = 'Add'
+      ShortCut = 16449
       OnExecute = brushAddExecute
     end
     object brushSubtract: TAction
       Category = 'Brush'
       Caption = 'Subtract'
+      ShortCut = 16467
       OnExecute = brushSubtractExecute
     end
     object brushIntersect: TAction
@@ -3842,5 +3844,127 @@ object frmMain: TfrmMain
       Caption = 'Actor_Selected_Properties'
       OnExecute = Actor_Selected_PropertiesExecute
     end
+    object surf_Properties: TAction
+      Category = 'Surface'
+      Caption = 'Surface properties'
+      Hint = 'Poly has a big wavy pattern in it.'
+      OnExecute = surf_PropertiesExecute
+    end
+    object align_Default: TAction
+      Category = 'TexAlign'
+      Caption = 'align_Default'
+    end
+    object align_Floor: TAction
+      Category = 'TexAlign'
+      Caption = 'align_Floor'
+    end
+    object Align_WallDir: TAction
+      Category = 'TexAlign'
+      Caption = 'Align_WallDir'
+    end
+    object align_WallPan: TAction
+      Category = 'TexAlign'
+      Caption = 'align_WallPan'
+    end
+    object align_WallColumn: TAction
+      Category = 'TexAlign'
+      Caption = 'align_WallColumn'
+    end
+    object align_OneTile: TAction
+      Category = 'TexAlign'
+      Caption = 'align_OneTile'
+    end
+  end
+  object SurfacePopup: TPopupMenu
+    AutoHotkeys = maManual
+    AutoLineReduction = maManual
+    Left = 231
+    Top = 472
+    object Surfacepropertiessthselected1: TMenuItem
+      Action = surf_Properties
+    end
+    object N25: TMenuItem
+      Caption = '-'
+    end
+    object AddLighthere2: TMenuItem
+      Caption = 'Add Light here'
+    end
+    object AddcurrentClasshere1: TMenuItem
+      Caption = 'Add <currentClass> here'
+    end
+    object AddCustom11: TMenuItem
+      Caption = 'Add Custom 1'
+    end
+    object AddCustom21: TMenuItem
+      Caption = 'Add Custom 2'
+    end
+    object AddCustom31: TMenuItem
+      Caption = 'Add Custom 3'
+    end
+    object AddCustom41: TMenuItem
+      Caption = 'Add Custom 4'
+    end
+    object AddCustom51: TMenuItem
+      Caption = 'Add Custom 5'
+    end
+    object AddCustom61: TMenuItem
+      Caption = 'Add Custom 6'
+    end
+    object N26: TMenuItem
+      Caption = '-'
+    end
+    object AlighSelected1: TMenuItem
+      Caption = 'Aligh Selected'
+      object AlignAsFloorCeiling1: TMenuItem
+        Caption = 'Align As Floor/Ceiling'
+      end
+      object AlignOneTile1: TMenuItem
+        Caption = 'Align One Tile'
+      end
+      object N27: TMenuItem
+        Caption = '-'
+      end
+      object N28: TMenuItem
+        Caption = 'Align Wall Direction'
+      end
+      object AlignWallPanning1: TMenuItem
+        Caption = 'Align Wall Panning'
+      end
+      object N29: TMenuItem
+        Caption = '-'
+      end
+      object Unalignbacktodefault1: TMenuItem
+        Caption = 'Unalign back to default'
+      end
+    end
+    object ResetAllPanningScaleandAlign1: TMenuItem
+      Caption = 'Reset All Panning, Scale and Align'
+    end
+    object N30: TMenuItem
+      Caption = '-'
+    end
+    object Select1: TMenuItem
+      Caption = 'Select'
+      object Lotsofstuff1: TMenuItem
+        Caption = 'Lots of stuff...'
+      end
+    end
+    object SelectAllSurfaces1: TMenuItem
+      Caption = 'Select All Surfaces'
+    end
+    object UnselectAllSurfaces1: TMenuItem
+      Caption = 'Unselect All Surfaces'
+    end
+    object N32: TMenuItem
+      Caption = '-'
+    end
+    object Applyselectedtexture1: TMenuItem
+      Caption = 'Apply <selected texture>'
+    end
+  end
+  object AppEvents: TApplicationEvents
+    OnShowHint = AppEventsShowHint
+    Left = 148
+    Top = 388
   end
 end
