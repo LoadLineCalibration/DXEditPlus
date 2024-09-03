@@ -377,19 +377,28 @@ end;
 
 procedure RotateTexture(Angle: Double);
 var
-    Radians, CosTheta, SinTheta: Double;
+    AngleInRadians, cosTheta, sinTheta: Double;
     Command: string;
+    FormatSettings: TFormatSettings;
 begin
+    // Устанавливаем настройки формата для чисел, чтобы использовать точку как десятичный разделитель
+    FormatSettings := TFormatSettings.Create;
+    FormatSettings.DecimalSeparator := '.';
+
     // Перевод угла в радианы
-    Radians := DegToRad(Angle);
+    AngleInRadians := DegToRad(Angle);
 
     // Вычисляем косинус и синус угла
-    CosTheta := Cos(Radians);
-    SinTheta := Sin(Radians);
+    cosTheta := Cos(AngleInRadians);
+    sinTheta := Sin(AngleInRadians);
 
     // Формируем команду для отправки на сервер
-    Command := Format('POLY TEXMULT UU=%f VV=%f UV=%f VU=%f', [CosTheta, CosTheta, SinTheta, -SinTheta]);
+    Command := 'POLY TEXMULT UU=' + FormatFloat('.###############', cosTheta, FormatSettings) +
+               ' VV=' + FormatFloat('.###############', cosTheta, FormatSettings) +
+               ' UV=' + FormatFloat('.###############', sinTheta, FormatSettings) +
+               ' VU=' + FormatFloat('.###############', -sinTheta, FormatSettings);
 
+    // Отправка команды на сервер
     ServerCmd(Command);
 end;
 
