@@ -37,7 +37,7 @@ object frmSurfaceProps: TfrmSurfaceProps
     ExplicitTop = 233
   end
   object Label3: TLabel
-    Left = 202
+    Left = 225
     Top = 260
     Width = 181
     Height = 15
@@ -665,6 +665,7 @@ object frmSurfaceProps: TfrmSurfaceProps
           Height = 25
           Caption = 'Wall Direction'
           TabOrder = 3
+          OnClick = btnAlignWallDirClick
         end
         object btnAlignWallColumn: TButton
           Left = 8
@@ -673,6 +674,7 @@ object frmSurfaceProps: TfrmSurfaceProps
           Height = 25
           Caption = 'Wall Column:'
           TabOrder = 4
+          OnClick = btnAlignWallColumnClick
         end
         object btnAlignWallPan: TButton
           Left = 8
@@ -681,6 +683,7 @@ object frmSurfaceProps: TfrmSurfaceProps
           Height = 25
           Caption = 'Wall Pan'
           TabOrder = 5
+          OnClick = btnAlignWallPanClick
         end
         object se_WallColumnTexels: TJvSpinEdit
           Left = 112
@@ -725,39 +728,40 @@ object frmSurfaceProps: TfrmSurfaceProps
         object cmbScale: TComboBox
           Left = 63
           Top = 20
-          Width = 89
+          Width = 106
           Height = 23
-          ItemIndex = 8
           TabOrder = 0
           Text = '1.0'#10
           Items.Strings = (
-            '0.0625'
-            '0.09375'
-            '0.125'
-            '0.1875'
-            '0.25'
-            '0.375'
-            '0.5'
-            '0.75'
-            '1.0'#10
-            '1.125'
-            #10'1.25'
-            #10'1.375'
-            #10'1.5'
-            #10'1.625'
-            #10'1.75'
-            #10'1.875'
-            #10'2.0'
-            #10'4.0'
-            #10'8.0'#10
-            '16.0')
+            '0,0625'
+            '0,09375'
+            '0,125'
+            '0,1875'
+            '0,25'
+            '0,375'
+            '0,5'
+            '0,75'
+            '1,0'#10
+            '1,125'
+            #10'1,25'
+            #10'1,375'
+            #10'1,5'
+            #10'1,625'
+            #10'1,75'
+            #10'1,875'
+            #10'2,0'
+            #10'4,0'
+            #10'8,0'#10
+            '16,0')
         end
-        object JvSpinEdit1: TJvSpinEdit
+        object se_VVScale: TJvSpinEdit
           Left = 63
           Top = 77
-          Width = 89
+          Width = 106
           Height = 23
           Decimal = 6
+          Increment = 0.050000000000000000
+          MaxValue = 1000.000000000000000000
           ValueType = vtFloat
           Font.Charset = RUSSIAN_CHARSET
           Font.Color = clWindowText
@@ -767,12 +771,14 @@ object frmSurfaceProps: TfrmSurfaceProps
           ParentFont = False
           TabOrder = 1
         end
-        object JvSpinEdit2: TJvSpinEdit
+        object se_UUScale: TJvSpinEdit
           Left = 63
           Top = 49
-          Width = 89
+          Width = 106
           Height = 23
           Decimal = 6
+          Increment = 0.050000000000000000
+          MaxValue = 1000.000000000000000000
           ValueType = vtFloat
           Font.Charset = RUSSIAN_CHARSET
           Font.Color = clWindowText
@@ -783,20 +789,30 @@ object frmSurfaceProps: TfrmSurfaceProps
           TabOrder = 2
         end
         object btnApplySimpleScaling: TButton
-          Left = 158
+          Left = 175
           Top = 18
-          Width = 51
+          Width = 70
           Height = 25
           Caption = 'Apply'
           TabOrder = 3
+          OnClick = btnApplySimpleScalingClick
         end
         object btnApply_UV_Scaling: TButton
-          Left = 157
+          Left = 175
           Top = 49
-          Width = 52
-          Height = 52
+          Width = 70
+          Height = 22
           Caption = 'Apply'
           TabOrder = 4
+          OnClick = btnApply_UV_ScalingClick
+        end
+        object chkRelativeScaling: TCheckBox
+          Left = 175
+          Top = 78
+          Width = 75
+          Height = 17
+          Caption = 'Relative?'
+          TabOrder = 5
         end
       end
     end

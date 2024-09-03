@@ -48,6 +48,13 @@ resourcestring
     strSelectWithSameBindName = 'Select All Actors with same BindName (%s)';
     strSelectWithSameBarkBindName = 'Select All Actors with same BarkBindName (%s)';
 
+    // Polys...
+    strSurfaceProperties = 'Surface properties (%d selected)...';
+
+    // Texture pan, scale, rotation
+    strInvalidScale = 'ERROR! Invalid Scale value!';
+    strInvalidScaleTitle = 'Error';
+
 
 implementation
 

@@ -4,7 +4,8 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls, ES.Labels, Vcl.ExtCtrls, Vcl.Mask, JvExMask, JvSpin;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls, uEditorLoader, uEditor.Strings,
+  ES.Labels, Vcl.ExtCtrls, Vcl.Mask, JvExMask, JvSpin;
 
 type
   TfrmSurfaceProps = class(TForm)
@@ -60,8 +61,8 @@ type
     btnAlignWallColumn: TButton;
     btnAlignWallPan: TButton;
     Label2: TLabel;
-    JvSpinEdit1: TJvSpinEdit;
-    JvSpinEdit2: TJvSpinEdit;
+    se_VVScale: TJvSpinEdit;
+    se_UUScale: TJvSpinEdit;
     se_WallColumnTexels: TJvSpinEdit;
     btnApplySimpleScaling: TButton;
     btnApply_UV_Scaling: TButton;
@@ -79,6 +80,7 @@ type
     btnFlipV: TButton;
     se_CustomAngle: TJvSpinEdit;
     btnApplyViewportRatio: TButton;
+    chkRelativeScaling: TCheckBox;
     procedure btnCloseClick(Sender: TObject);
     procedure btnUnalignClick(Sender: TObject);
     procedure btnPanUClick(Sender: TObject);
@@ -95,6 +97,11 @@ type
     procedure btnFlipUClick(Sender: TObject);
     procedure btnFlipVClick(Sender: TObject);
     procedure btnApplyViewportRatioClick(Sender: TObject);
+    procedure btnApplySimpleScalingClick(Sender: TObject);
+    procedure btnApply_UV_ScalingClick(Sender: TObject);
+    procedure btnAlignWallDirClick(Sender: TObject);
+    procedure btnAlignWallPanClick(Sender: TObject);
+    procedure btnAlignWallColumnClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -107,8 +114,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses uEditorLoader;
 
 procedure TfrmSurfaceProps.btnCloseClick(Sender: TObject);
 begin
@@ -140,9 +145,62 @@ begin
         ServerCmd('POLY TEXPAN V=' + IntToStr(PanValue))
 end;
 
+procedure TfrmSurfaceProps.btnAlignWallColumnClick(Sender: TObject);
+begin
+    ServerCmd('POLY TEXALIGN WALLCOLUMN TEXELS=' + se_WallColumnTexels.Value.ToString);
+end;
+
+procedure TfrmSurfaceProps.btnAlignWallDirClick(Sender: TObject);
+begin
+    ServerCmd('POLY TEXALIGN WALLDIR');
+end;
+
+procedure TfrmSurfaceProps.btnAlignWallPanClick(Sender: TObject);
+begin
+    ServerCmd('POLY TEXALIGN WALLPAN');
+end;
+
+procedure TfrmSurfaceProps.btnApplySimpleScalingClick(Sender: TObject);
+var
+    Scale: Double;
+    FormatSettings: TFormatSettings;
+    InputText: string;
+begin
+    FormatSettings := TFormatSettings.Create; // Настраиваем форматирование для использования точки в качестве разделителя
+    FormatSettings.DecimalSeparator := '.';
+
+    InputText := Trim(cmbScale.Text);
+    InputText := StringReplace(InputText, ',', '.', [rfReplaceAll]);     // Заменяем запятую на точку, если она присутствует
+
+    if (InputText = '') or TryStrToFloat(InputText, Scale, FormatSettings) = False then
+    begin
+        MessageBox(Handle, PChar(strInvalidScale), PChar(strInvalidScaleTitle), MB_OK + MB_ICONSTOP + MB_TOPMOST);
+        Exit;
+    end;
+
+    try
+        Scale := StrToFloat(InputText, FormatSettings);
+        uEditorLoader.ScaleTexture(Scale, Scale, chkRelativeScaling.Checked);
+    except
+        on E: EConvertError do
+        MessageBox(Handle, PChar(strInvalidScale), PChar(strInvalidScaleTitle), MB_OK + MB_ICONSTOP + MB_TOPMOST);
+    end;
+end;
+
 procedure TfrmSurfaceProps.btnApplyViewportRatioClick(Sender: TObject);
 begin
-    uEditorLoader.RotateTexture(se_CustomAngle.Value);
+    if GetKeyState(VK_SHIFT) < 0 then
+        uEditorLoader.RotateTexture(-se_CustomAngle.Value)
+    else
+        uEditorLoader.RotateTexture(se_CustomAngle.Value);
+end;
+
+procedure TfrmSurfaceProps.btnApply_UV_ScalingClick(Sender: TObject);
+begin
+    var ScaleUU := se_UUScale.Value;
+    var ScaleVV := se_VVScale.Value;
+
+    uEditorLoader.ScaleTexture(ScaleUU, ScaleVV, chkRelativeScaling.Checked);
 end;
 
 procedure TfrmSurfaceProps.btnBigDiagonalClick(Sender: TObject);
