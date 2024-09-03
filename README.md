@@ -1,7 +1,7 @@
 # DXEditPlus
 An attempt to recreate better level editor for Deus Ex.
 
-Some features I've alreadsy implemented:
+Extended/Improved features I've alreadsy implemented:
 * High-precision texture rotation. The minimal step is 0.001°
 * Startup check. Check if all EditPackages are exist, so we can safely contiunue loading the editor.
 * Search in Class Browser.
