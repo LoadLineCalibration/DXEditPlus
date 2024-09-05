@@ -1,10 +1,10 @@
 object frmBrushBuilder: TfrmBrushBuilder
   Left = 0
   Top = 0
-  BorderStyle = bsDialog
+  BorderIcons = [biSystemMenu]
   Caption = 'Cube Builder'
-  ClientHeight = 255
-  ClientWidth = 408
+  ClientHeight = 237
+  ClientWidth = 346
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,15 +13,19 @@ object frmBrushBuilder: TfrmBrushBuilder
   Font.Style = []
   Position = poScreenCenter
   ShowHint = True
+  OnClose = FormClose
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
-  OnShow = FormShow
+  DesignSize = (
+    346
+    237)
   TextHeight = 15
   object gb1: TGroupBox
-    Left = 8
-    Top = 8
-    Width = 313
-    Height = 241
+    Left = 4
+    Top = 0
+    Width = 340
+    Height = 203
+    Anchors = [akLeft, akTop, akRight, akBottom]
     Caption = 'Properties'
     DefaultHeaderFont = False
     HeaderFont.Charset = DEFAULT_CHARSET
@@ -34,8 +38,8 @@ object frmBrushBuilder: TfrmBrushBuilder
       AlignWithMargins = True
       Left = 6
       Top = 21
-      Width = 301
-      Height = 214
+      Width = 328
+      Height = 176
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -46,7 +50,7 @@ object frmBrushBuilder: TfrmBrushBuilder
       object bbHeader: THeaderControl
         Left = 2
         Top = 2
-        Width = 297
+        Width = 324
         Height = 18
         Sections = <
           item
@@ -76,40 +80,45 @@ object frmBrushBuilder: TfrmBrushBuilder
         AlignWithMargins = True
         Left = 5
         Top = 23
-        Width = 291
-        Height = 186
+        Width = 318
+        Height = 148
         HorzScrollBar.Visible = False
         Align = alClient
         BorderStyle = bsNone
         TabOrder = 0
+        OnEnter = EditFieldEnter
+        OnExit = EditFieldExit
       end
     end
   end
   object btnClose: TButton
-    Left = 327
-    Top = 70
+    Left = 107
+    Top = 209
     Width = 75
     Height = 25
+    Anchors = [akRight, akBottom]
     Cancel = True
     Caption = 'Close'
     TabOrder = 1
     OnClick = btnCloseClick
   end
   object btnReset: TButton
-    Left = 327
-    Top = 39
+    Left = 188
+    Top = 209
     Width = 75
     Height = 25
+    Anchors = [akRight, akBottom]
     Cancel = True
     Caption = 'Reset'
     TabOrder = 2
     OnClick = btnResetClick
   end
   object btnBuild: TButton
-    Left = 327
-    Top = 8
+    Left = 269
+    Top = 209
     Width = 75
     Height = 25
+    Anchors = [akRight, akBottom]
     Cancel = True
     Caption = 'Build'
     Default = True
@@ -120,5 +129,16 @@ object frmBrushBuilder: TfrmBrushBuilder
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 3
+    OnClick = btnBuildClick
+  end
+  object chkCloseWhenBuilt: TCheckBox
+    Left = 21
+    Top = 209
+    Width = 73
+    Height = 25
+    Anchors = [akRight, akBottom]
+    Caption = 'Close after building?'
+    TabOrder = 4
+    WordWrap = True
   end
 end
