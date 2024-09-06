@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.StdCtrls, Vcl.ExtCtrls, vcl.Dialogs, ES.BaseControls, ES.Layouts,
-  ES.CfxClasses, Vcl.ComCtrls, uBrushBuilders.Utils, Engine.UnObj;
+  ES.CfxClasses, Vcl.ComCtrls, uBrushBuilders.Utils, Engine.UnObj, DXEditPlus.Helpers;
 
 type
   TControlType = (ctComboBox, ctCheckBox, ctFloat, ctString);  // only for testing!
@@ -82,7 +82,7 @@ begin
         Panel.Parent := bbScrollBox;
         Panel.FrameStyle := TExFrameStyle.Flat;
         Panel.Align := alTop;
-        Panel.Height := 25;  // Уменьшение высоты панели
+        Panel.Height := Round(25 * DXEditPlus.Helpers.GetDPIAsRatio());  // Уменьшение высоты панели
         Panel.Caption := aName;
         Panel.CaptionHorzLayout := THorzLayout.Left;
         Panel.TabStop := True; // Позволяет панели получать фокус
@@ -123,7 +123,7 @@ begin
                     TEdit(Control).Text := '256';
                     TEdit(Control).Color := clSilver;
                     TEdit(Control).BorderStyle := bsNone;
-                    TEdit(Control).Height := 15;
+                    TEdit(Control).Height := Round(15 * DXEditPlus.Helpers.GetDPIAsRatio());
                     TEdit(Control).Top := 5;
                     TEdit(Control).OnEnter := EditFieldEnter;
                     TEdit(Control).OnExit := EditFieldExit;
@@ -137,7 +137,7 @@ begin
                     TEdit(Control).Text := 'Sample text';
                     TEdit(Control).Color := clSilver;
                     TEdit(Control).BorderStyle := bsNone;
-                    TEdit(Control).Height := 15;
+                    TEdit(Control).Height := Round(15 * DXEditPlus.Helpers.GetDPIAsRatio());
                     TEdit(Control).Top := 5;
                     TEdit(Control).OnEnter := EditFieldEnter;
                     TEdit(Control).OnExit := EditFieldExit;
