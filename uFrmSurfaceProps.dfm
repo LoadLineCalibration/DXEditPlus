@@ -1,6 +1,7 @@
 object frmSurfaceProps: TfrmSurfaceProps
   Left = 0
   Top = 0
+  BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'frmSurfaceProps'
   ClientHeight = 283
@@ -11,7 +12,9 @@ object frmSurfaceProps: TfrmSurfaceProps
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
+  PopupMode = pmExplicit
   ShowHint = True
+  OnShow = FormShow
   DesignSize = (
     539
     283)
@@ -28,34 +31,35 @@ object frmSurfaceProps: TfrmSurfaceProps
   object LL_FlagsInfo: TEsLinkLabel
     Left = 8
     Top = 260
-    Width = 154
+    Width = 94
     Height = 15
     Hint = 'https://beyondunrealwiki.github.io/pages/surface-flags-ut.html'
     Anchors = [akLeft, akBottom]
-    Caption = 'Descriptions from UnrealWiki'
+    Caption = 'Flags descriptions'
     Url = 'https://beyondunrealwiki.github.io/pages/surface-flags-ut.html'
-    ExplicitTop = 233
   end
-  object Label3: TLabel
-    Left = 225
+  object lblHoldShift: TLabel
+    Left = 8
     Top = 260
     Width = 181
     Height = 15
     Caption = 'Hold SHIFT to pan/rotate opposite'
   end
-  object PageControl1: TPageControl
+  object pgc_SurfProps: TPageControl
     AlignWithMargins = True
     Left = 3
     Top = 3
     Width = 533
     Height = 234
-    ActivePage = TabSheet2
+    ActivePage = tsAlign2
     Align = alTop
     Style = tsButtons
     TabOrder = 0
+    OnChange = pgc_SurfPropsChange
     object tsSurfaceFlags: TTabSheet
       Caption = 'Surface Flags'
       object chkMasked: TCheckBox
+        Tag = 2
         Left = 3
         Top = 16
         Width = 97
@@ -72,8 +76,10 @@ object frmSurfaceProps: TfrmSurfaceProps
           ' textures!'
         Caption = 'Masked'
         TabOrder = 0
+        OnClick = PolyFlagsClick
       end
       object chkInvisible: TCheckBox
+        Tag = 1
         Left = 3
         Top = 39
         Width = 97
@@ -85,8 +91,10 @@ object frmSurfaceProps: TfrmSurfaceProps
           'abled in the viewport'#39's titlebar.'
         Caption = 'Invisible'
         TabOrder = 1
+        OnClick = PolyFlagsClick
       end
       object chk2Sided: TCheckBox
+        Tag = 256
         Left = 3
         Top = 62
         Width = 97
@@ -102,8 +110,10 @@ object frmSurfaceProps: TfrmSurfaceProps
           'gnment. '#13#10'There is no way to have a different texture per side.'
         Caption = 'Two-Sided'
         TabOrder = 2
+        OnClick = PolyFlagsClick
       end
       object chkPortal: TCheckBox
+        Tag = 67108864
         Left = 3
         Top = 85
         Width = 97
@@ -111,8 +121,10 @@ object frmSurfaceProps: TfrmSurfaceProps
         Hint = 'Makes the surface a Zone Portal.'
         Caption = 'Portal'
         TabOrder = 3
+        OnClick = PolyFlagsClick
       end
       object chkMirror: TCheckBox
+        Tag = 134217728
         Left = 3
         Top = 108
         Width = 97
@@ -127,8 +139,10 @@ object frmSurfaceProps: TfrmSurfaceProps
           'ssigned to it.'
         Caption = 'Mirror'
         TabOrder = 4
+        OnClick = PolyFlagsClick
       end
       object chkNoBoundsReject: TCheckBox
+        Tag = 2097152
         Left = 379
         Top = 108
         Width = 122
@@ -145,8 +159,10 @@ object frmSurfaceProps: TfrmSurfaceProps
           ' really causing the problem. '
         Caption = 'No Bounds Reject'
         TabOrder = 5
+        OnClick = PolyFlagsClick
       end
       object chkSpecialLit: TCheckBox
+        Tag = 1048576
         Left = 116
         Top = 16
         Width = 97
@@ -159,8 +175,10 @@ object frmSurfaceProps: TfrmSurfaceProps
           'a special light source in this case.'
         Caption = 'Special Lit'
         TabOrder = 6
+        OnClick = PolyFlagsClick
       end
       object chkUnlit: TCheckBox
+        Tag = 4194304
         Left = 116
         Top = 39
         Width = 97
@@ -172,8 +190,10 @@ object frmSurfaceProps: TfrmSurfaceProps
           'es that look like light sources.'
         Caption = 'Unlit'
         TabOrder = 7
+        OnClick = PolyFlagsClick
       end
       object chkHighShadowDetail: TCheckBox
+        Tag = 8388608
         Left = 116
         Top = 62
         Width = 125
@@ -185,8 +205,10 @@ object frmSurfaceProps: TfrmSurfaceProps
           'd by weapon fire. '
         Caption = 'High Shadow Detail'
         TabOrder = 8
+        OnClick = PolyFlagsClick
       end
       object chkLowShadowDetail: TCheckBox
+        Tag = 32768
         Left = 116
         Top = 85
         Width = 125
@@ -198,8 +220,10 @@ object frmSurfaceProps: TfrmSurfaceProps
           't then the texture will have Ultra Low Shadow Detail. '
         Caption = 'Low Shadow Detail'
         TabOrder = 9
+        OnClick = PolyFlagsClick
       end
       object chkDirtyShadows: TCheckBox
+        Tag = 262144
         Left = 116
         Top = 108
         Width = 97
@@ -209,8 +233,10 @@ object frmSurfaceProps: TfrmSurfaceProps
           'se of looks...'
         Caption = 'Dirty Shadows'
         TabOrder = 10
+        OnClick = PolyFlagsClick
       end
       object chkBrightCorners: TCheckBox
+        Tag = 524288
         Left = 116
         Top = 131
         Width = 109
@@ -226,8 +252,10 @@ object frmSurfaceProps: TfrmSurfaceProps
           'no dark corners.'
         Caption = 'Bright Corners'
         TabOrder = 11
+        OnClick = PolyFlagsClick
       end
       object chkForceViewZone: TCheckBox
+        Tag = 16
         Left = 379
         Top = 131
         Width = 114
@@ -245,8 +273,10 @@ object frmSurfaceProps: TfrmSurfaceProps
           ' be verified by moving inside the level. '
         Caption = 'Force View Zone'
         TabOrder = 12
+        OnClick = PolyFlagsClick
       end
       object chkFakeBackdrop: TCheckBox
+        Tag = 128
         Left = 259
         Top = 108
         Width = 97
@@ -259,8 +289,10 @@ object frmSurfaceProps: TfrmSurfaceProps
           'ling of an outdoor area.'
         Caption = 'Fake Backdrop'
         TabOrder = 13
+        OnClick = PolyFlagsClick
       end
       object chkSmallWavy: TCheckBox
+        Tag = 8192
         Left = 259
         Top = 85
         Width = 97
@@ -272,16 +304,20 @@ object frmSurfaceProps: TfrmSurfaceProps
           'dom. '#13#10'Good for water in a pool.'
         Caption = 'Small Wavy'
         TabOrder = 14
+        OnClick = PolyFlagsClick
       end
       object chkSpecialPoly: TCheckBox
+        Tag = 4096
         Left = 379
         Top = 85
         Width = 97
         Height = 17
         Caption = 'Special Poly'
         TabOrder = 15
+        OnClick = PolyFlagsClick
       end
       object chkModulated: TCheckBox
+        Tag = 64
         Left = 259
         Top = 62
         Width = 97
@@ -293,8 +329,10 @@ object frmSurfaceProps: TfrmSurfaceProps
           'or 255, 255, 255 = brighten whatever is behind it'#13#10#13#10
         Caption = 'Modulated'
         TabOrder = 16
+        OnClick = PolyFlagsClick
       end
       object chkTranslucent: TCheckBox
+        Tag = 4
         Left = 259
         Top = 39
         Width = 97
@@ -306,8 +344,10 @@ object frmSurfaceProps: TfrmSurfaceProps
           'lack is 100% translucent'#13#10
         Caption = 'Translucent'
         TabOrder = 17
+        OnClick = PolyFlagsClick
       end
       object chkNoSmooth: TCheckBox
+        Tag = 2048
         Left = 259
         Top = 16
         Width = 97
@@ -315,8 +355,10 @@ object frmSurfaceProps: TfrmSurfaceProps
         Hint = 'Turns off all texture filtering and smoothing for the surface.'
         Caption = 'No Smooth'
         TabOrder = 18
+        OnClick = PolyFlagsClick
       end
       object chkVpan: TCheckBox
+        Tag = 1024
         Left = 379
         Top = 39
         Width = 97
@@ -330,8 +372,10 @@ object frmSurfaceProps: TfrmSurfaceProps
           'es. '#13#10'Good for flowing water, clouds in the SkyBox. '
         Caption = 'V-Pan'
         TabOrder = 19
+        OnClick = PolyFlagsClick
       end
       object chkUpan: TCheckBox
+        Tag = 512
         Left = 379
         Top = 16
         Width = 97
@@ -345,9 +389,19 @@ object frmSurfaceProps: TfrmSurfaceProps
           'es. '#13#10'Good for flowing water, clouds in the SkyBox. '
         Caption = 'U-Pan'
         TabOrder = 20
+        OnClick = PolyFlagsClick
+      end
+      object btnClearAllSurfFlags: TButton
+        Left = 3
+        Top = 177
+        Width = 97
+        Height = 21
+        Caption = 'Reset all flags'
+        TabOrder = 21
+        OnClick = btnClearAllSurfFlagsClick
       end
     end
-    object TabSheet2: TTabSheet
+    object tsAlign: TTabSheet
       Caption = 'Align'
       ImageIndex = 1
       object gb_Pan: TGroupBox
@@ -366,7 +420,7 @@ object frmSurfaceProps: TfrmSurfaceProps
         object Label1: TLabel
           Left = 2
           Top = 17
-          Width = 19
+          Width = 24
           Height = 62
           Align = alLeft
           Alignment = taRightJustify
@@ -701,7 +755,7 @@ object frmSurfaceProps: TfrmSurfaceProps
           TabOrder = 6
         end
       end
-      object GroupBox2: TGroupBox
+      object gb_Scaling: TGroupBox
         Left = 267
         Top = 85
         Width = 258
@@ -816,7 +870,250 @@ object frmSurfaceProps: TfrmSurfaceProps
         end
       end
     end
-    object TabSheet3: TTabSheet
+    object tsAlign2: TTabSheet
+      Caption = 'Align(Advanced)'
+      ImageIndex = 3
+      object gb_TextureSkew: TGroupBox
+        Left = 3
+        Top = 0
+        Width = 300
+        Height = 198
+        Caption = 'Texture Skew'
+        DefaultHeaderFont = False
+        HeaderFont.Charset = DEFAULT_CHARSET
+        HeaderFont.Color = clWindowText
+        HeaderFont.Height = -12
+        HeaderFont.Name = 'Segoe UI'
+        HeaderFont.Style = [fsBold]
+        TabOrder = 0
+        object Bevel2: TBevel
+          AlignWithMargins = True
+          Left = 149
+          Top = 41
+          Width = 3
+          Height = 152
+          Margins.Left = 0
+          Margins.Top = 0
+          Margins.Right = 0
+          Align = alLeft
+          Shape = bsRightLine
+          ExplicitLeft = 140
+          ExplicitTop = 17
+          ExplicitHeight = 179
+        end
+        object pnlHSkew: TEsPanel
+          Left = 2
+          Top = 41
+          Width = 147
+          Height = 155
+          Align = alLeft
+          TabOrder = 0
+          FrameStyle = None
+          object Label3: TLabel
+            AlignWithMargins = True
+            Left = 3
+            Top = 3
+            Width = 42
+            Height = 149
+            Align = alLeft
+            Alignment = taRightJustify
+            Caption = #13#10'Rise:'#13#10#13#10'Run:'#13#10#13#10'H Scale:'#13#10
+            ExplicitHeight = 105
+          end
+          object se_HRise: TJvSpinEdit
+            Left = 50
+            Top = 16
+            Width = 92
+            Height = 23
+            Decimal = 5
+            MaxValue = 65535.000000000000000000
+            MinValue = 1.000000000000000000
+            ValueType = vtFloat
+            Value = 256.000000000000000000
+            Font.Charset = RUSSIAN_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Consolas'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 0
+            HideSelection = False
+          end
+          object se_HRun: TJvSpinEdit
+            Left = 50
+            Top = 45
+            Width = 92
+            Height = 23
+            Decimal = 5
+            MaxValue = 65535.000000000000000000
+            ValueType = vtFloat
+            Value = 256.000000000000000000
+            Font.Charset = RUSSIAN_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Consolas'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 1
+            HideSelection = False
+          end
+          object se_HScale: TJvSpinEdit
+            Left = 50
+            Top = 74
+            Width = 92
+            Height = 23
+            Decimal = 5
+            Increment = 0.050000000000000000
+            MaxValue = 256.000000000000000000
+            MinValue = 0.031250000000000000
+            ValueType = vtFloat
+            Value = 1.000000000000000000
+            Font.Charset = RUSSIAN_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Consolas'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 2
+            HideSelection = False
+          end
+          object chkHNegate: TCheckBox
+            Left = 51
+            Top = 103
+            Width = 80
+            Height = 17
+            Caption = 'Negate'
+            TabOrder = 3
+          end
+        end
+        object pnlVSkew: TEsPanel
+          Left = 152
+          Top = 41
+          Width = 147
+          Height = 155
+          Align = alLeft
+          TabOrder = 1
+          FrameStyle = None
+          object Label4: TLabel
+            AlignWithMargins = True
+            Left = 3
+            Top = 3
+            Width = 40
+            Height = 149
+            Align = alLeft
+            Alignment = taRightJustify
+            Caption = #13#10'Rise:'#13#10#13#10'Run:'#13#10#13#10'V Scale:'#13#10
+            ExplicitHeight = 105
+          end
+          object se_VRise: TJvSpinEdit
+            Left = 50
+            Top = 16
+            Width = 92
+            Height = 23
+            Decimal = 5
+            MaxValue = 65535.000000000000000000
+            ValueType = vtFloat
+            Value = 256.000000000000000000
+            Font.Charset = RUSSIAN_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Consolas'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 0
+            HideSelection = False
+          end
+          object se_VRun: TJvSpinEdit
+            Left = 50
+            Top = 45
+            Width = 92
+            Height = 23
+            Decimal = 5
+            MaxValue = 65535.000000000000000000
+            MinValue = 1.000000000000000000
+            ValueType = vtFloat
+            Value = 256.000000000000000000
+            Font.Charset = RUSSIAN_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Consolas'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 1
+            HideSelection = False
+          end
+          object se_VScale: TJvSpinEdit
+            Left = 50
+            Top = 74
+            Width = 92
+            Height = 23
+            Decimal = 5
+            Increment = 0.050000000000000000
+            MaxValue = 256.000000000000000000
+            MinValue = 0.031250000000000000
+            ValueType = vtFloat
+            Value = 1.000000000000000000
+            Font.Charset = RUSSIAN_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Consolas'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 2
+            HideSelection = False
+          end
+          object chkVNegate: TCheckBox
+            Left = 50
+            Top = 103
+            Width = 80
+            Height = 17
+            Caption = 'Negate'
+            TabOrder = 3
+          end
+        end
+        object EsPanel2: TEsPanel
+          Left = 2
+          Top = 17
+          Width = 296
+          Height = 24
+          Align = alTop
+          TabOrder = 2
+          FrameStyle = Chess
+          object chkHorizontalSkew: TCheckBox
+            AlignWithMargins = True
+            Left = 5
+            Top = 5
+            Width = 133
+            Height = 14
+            Align = alLeft
+            Caption = 'Horizontal Skewing'
+            TabOrder = 0
+            OnClick = chkHorizontalSkewClick
+          end
+          object chkVerticalSkew: TCheckBox
+            AlignWithMargins = True
+            Left = 152
+            Top = 5
+            Width = 139
+            Height = 14
+            Align = alRight
+            Caption = 'Vertical Skewing'
+            TabOrder = 1
+            OnClick = chkVerticalSkewClick
+          end
+        end
+        object btnApplySkewing: TButton
+          Left = 83
+          Top = 172
+          Width = 134
+          Height = 21
+          Caption = 'Apply skewing'
+          TabOrder = 3
+          OnClick = btnApplySkewingClick
+        end
+      end
+    end
+    object tsStats: TTabSheet
       Caption = 'Stats'
       ImageIndex = 2
       object mmoStats: TMemo
@@ -848,5 +1145,14 @@ object frmSurfaceProps: TfrmSurfaceProps
     Caption = 'Close'
     TabOrder = 1
     OnClick = btnCloseClick
+  end
+  object btnResetAll: TButton
+    Left = 357
+    Top = 250
+    Width = 75
+    Height = 25
+    Caption = 'Reset All'
+    TabOrder = 2
+    OnClick = btnResetAllClick
   end
 end
