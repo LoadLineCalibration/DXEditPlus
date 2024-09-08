@@ -30,6 +30,12 @@ function Get_GIsRequestingExit(): Integer;
 function DynamicFindClass(const SearchText: string): string;
 function DynamicFindClassInChildren(const ParentClass: string; const SearchText: string): string;
 
+// texture skewing
+function GenerateVertTexSkew(VertRise, VertRun, VertScale: Double; bVertNegate: Boolean): string;
+function GenerateHorzTexSkew(HorzRise, HorzRun, HorzScale: Double; bHorzNegate: Boolean): string;
+function GenerateHVTexSkew(HorzRise, HorzRun, HorzScale: Double; bHorzNegate: Boolean;
+                           VertRise, VertRun, VertScale: Double; bVertNegate: Boolean): string;
+
 function ExtractField(const fieldName, text: string): string;
 function GetActorEvent(const TextToProcess: string): string;
 function GetActorTag(const TextToProcess: string): string;
@@ -44,6 +50,7 @@ procedure SetRotGridSize(const NewValue: Integer);
 procedure SetMoverKeyFrame(const NewKey: Integer);
 procedure SelectActorsOfClass(const NewClass: string);
 procedure RotateTexture(Angle: Double); // Школьная романтика
+procedure ScaleTexture(ScaleUU, ScaleVV: Double; bRelative: Boolean);
 
 // New commands from Hanflings's EditorPatch
 procedure SelectOfSubClass(const NewClass: string); // 	Works like the SELECT OFCLASS command, but includes subclasses as well.
@@ -52,9 +59,6 @@ procedure SelectOfEvent(const NewEvent: string); // 	Selects all Actors with Eve
 procedure SelectOfAttachTag(const NewTag: string); // 	Selects all Actors with AttachTag=<attachtag>.
 procedure SelectOfBindName(const NewBindName: string); //	Selects all Actors with Bindname=<bindname>
 procedure SelectOfBarkBindName(const NewBarkBindName: string); // 	Selects all Actors with BarkBindname=<barkbindname>
-
-
-
 
 
 
@@ -112,7 +116,7 @@ end;
 
 function NumSelectedActors(): Integer;
 begin
-    Result := StrToInt(ServerGetProp('Actor', 'NumSelected'));
+    Result := StrToIntDef(ServerGetProp('Actor', 'NumSelected'),0);
 end;
 
 function NumSelectedPolys(): Integer;
@@ -240,6 +244,7 @@ begin
                     Exit;
             end;
         end;
+
     finally
         Lines.Free();
     end;
@@ -281,10 +286,106 @@ begin
                     Exit;
             end;
         end;
+
     finally
-      Lines.Free;
+        Lines.Free();
     end;
 end;
+
+function GenerateVertTexSkew(VertRise, VertRun, VertScale: Double; bVertNegate: Boolean): string;
+var
+    VV, VU: Double;
+    FormatSettings: TFormatSettings;
+begin
+    FormatSettings := TFormatSettings.Create();
+    FormatSettings.DecimalSeparator := '.';
+
+    if VertRise = 0 then
+    begin
+        VV := 1.0 / VertScale;
+        VU := 0.0; // When VertRise is zero, VU should be zero
+    end
+    else
+    begin
+        VV := 1.0 / VertScale;
+        VU := -1.0 / (VertScale * VertRun / VertRise);
+
+    if bVertNegate = True then
+        VU := -VU;
+    end;
+
+    Result := Format('POLY TEXSCALE VV=%.6f VU=%.6f', [VV, VU], FormatSettings);
+end;
+
+function GenerateHorzTexSkew(HorzRise, HorzRun, HorzScale: Double; bHorzNegate: Boolean): string;
+var
+    UU, UV: Double;
+    FormatSettings: TFormatSettings;
+begin
+    FormatSettings := TFormatSettings.Create();
+    FormatSettings.DecimalSeparator := '.';
+
+    // Проверка на HorzRun = 0
+    if HorzRun = 0 then
+    begin
+        UU := 1.0 / HorzScale;
+        UV := 0;
+    end
+    else
+    begin
+        UU := 1.0 / HorzScale;
+        UV := -1.0 / (HorzScale *  HorzRise / HorzRun);
+
+    if bHorzNegate = True then
+        UV:= -UV;
+    end;
+
+    Result := Format('POLY TEXSCALE UU=%.6f UV=%.6f', [UU, UV], FormatSettings);
+end;
+
+function GenerateHVTexSkew(HorzRise, HorzRun, HorzScale: Double; bHorzNegate: Boolean;
+                           VertRise, VertRun, VertScale: Double; bVertNegate: Boolean): string;
+var
+    UU, UV, VV, VU: Double;
+    FormatSettings: TFormatSettings;
+begin
+    FormatSettings := TFormatSettings.Create();
+    FormatSettings.DecimalSeparator := '.';
+
+    // Calculate Horizontal (UU, UV) skew
+    if HorzRun = 0 then
+    begin
+        UU := 1.0 / HorzScale;
+        UV := 0.0; // When HorzRun is zero, UV should be zero
+    end
+    else
+    begin
+        UU := 1.0 / HorzScale;
+        UV := -1.0 / (HorzScale * HorzRise / HorzRun);
+
+        if bHorzNegate then
+            UV := -UV;
+    end;
+
+    // Calculate Vertical (VV, VU) skew
+    if VertRise = 0 then
+    begin
+        VV := 1.0 / VertScale;
+        VU := 0.0; // When VertRise is zero, VU should be zero
+    end
+    else
+    begin
+        VV := 1.0 / VertScale;
+        VU := -1.0 / (VertScale * VertRun / VertRise);
+
+        if bVertNegate then
+            VU := -VU;
+    end;
+
+    // Combine results
+    Result := Format('POLY TEXSCALE UU=%.6f UV=%.6f VV=%.6f VU=%.6f', [UU, UV, VV, VU], FormatSettings);
+end;
+
 
 function ExtractField(const fieldName, text: string): string;
 var
@@ -361,8 +462,16 @@ begin
 end;
 
 procedure SetRotGridSize(const NewValue: Integer);
+var
+    FormatSettings: TFormatSettings;
 begin
-    ServerCmd(Format('MAP ROTGRID X=%d Y=%d Z=%d', [NewValue, NewValue, NewValue]));
+    FormatSettings := TFormatSettings.Create();
+    FormatSettings.DecimalSeparator := '.';
+
+    var msdos_sys:= NewValue / 256;
+
+    ServerCmd(Format('MAP ROTGRID PITCH=%.6f YAW=%.6f ROLL=%.6f', [msdos_sys, msdos_sys, msdos_sys], FormatSettings));
+    ServerCmd('MAP ROTGRID=ON');
 end;
 
 procedure SetMoverKeyFrame(const NewKey: Integer);
@@ -402,6 +511,37 @@ begin
     ServerCmd(Command);
 end;
 
+procedure ScaleTexture(ScaleUU, ScaleVV: Double; bRelative: Boolean);
+var
+    Command: string;
+    UU, VV: Double;
+    FormatSettings: TFormatSettings;
+begin
+    // Проверка масштаба на корректность (не равен нулю)
+    if (ScaleUU = 0) or (ScaleVV = 0) then
+    begin
+        MessageBox(0,'Error: Scale cannot be zero!', 'ScaleTexture()',MB_OK + MB_ICONSTOP + MB_TOPMOST);
+        Exit;
+    end;
+
+    // Устанавливаем настройки формата для чисел, чтобы использовать точку как десятичный разделитель
+    FormatSettings := TFormatSettings.Create;
+    FormatSettings.DecimalSeparator := '.';
+
+    // Вычисление значений UU и VV
+    UU := 1 / ScaleUU;
+    VV := 1 / ScaleVV;
+
+    // Формируем команду в зависимости от значения bRelative
+    if bRelative = True then
+        Command := 'POLY TEXSCALE RELATIVE UU=' + FormatFloat('.#####', UU, FormatSettings) +
+                   ' VV=' + FormatFloat('.#####', VV, FormatSettings)
+    else
+        Command := 'POLY TEXSCALE UU=' + FormatFloat('.#####', UU, FormatSettings) +
+                   ' VV=' + FormatFloat('.#####', VV, FormatSettings);
+
+    ServerCmd(Command);
+end;
 
 procedure SelectOfSubClass(const NewClass: string); // 	Works like the SELECT OFCLASS command, but includes subclasses as well.
 begin
