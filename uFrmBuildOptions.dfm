@@ -20,7 +20,7 @@ object frmBuildOptions: TfrmBuildOptions
     Left = 4
     Top = 4
     Width = 382
-    Height = 487
+    Height = 493
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -39,6 +39,16 @@ object frmBuildOptions: TfrmBuildOptions
         Alignment = taRightJustify
         AutoSize = False
         Caption = 'Set required options and click'
+      end
+      object Bevel1: TBevel
+        Left = 0
+        Top = 458
+        Width = 374
+        Height = 2
+        Align = alBottom
+        Shape = bsTopLine
+        ExplicitTop = 495
+        ExplicitWidth = 390
       end
       object GroupBox1: TGroupBox
         Left = 0
@@ -289,6 +299,25 @@ object frmBuildOptions: TfrmBuildOptions
     object tsStats: TTabSheet
       Caption = 'Stats'
       ImageIndex = 1
+      object mmoStats: TMemo
+        Left = 0
+        Top = 0
+        Width = 374
+        Height = 460
+        Align = alClient
+        Color = clBtnFace
+        Font.Charset = RUSSIAN_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Consolas'
+        Font.Style = []
+        Lines.Strings = (
+          'mmoStats')
+        ParentFont = False
+        ScrollBars = ssVertical
+        TabOrder = 0
+        ExplicitHeight = 454
+      end
     end
   end
   object btnCloseBuilder: TButton
@@ -299,6 +328,15 @@ object frmBuildOptions: TfrmBuildOptions
     Caption = 'Close'
     TabOrder = 1
     OnClick = btnCloseBuilderClick
+  end
+  object btnRefreshStats: TButton
+    Left = 264
+    Top = 498
+    Width = 118
+    Height = 25
+    Caption = 'View/Refresh Stats'
+    TabOrder = 2
+    OnClick = btnRefreshStatsClick
   end
   object AutoPathsPopup: TPopupMenu
     Left = 240
