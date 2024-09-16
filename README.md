@@ -14,6 +14,7 @@ ___
 
 
 Right now I'm learning how it works.
-![изображение](https://github.com/user-attachments/assets/e6784dba-122f-4d52-ab11-eb38f3fd81db)
+![изображение](https://github.com/user-attachments/assets/76ed8fbf-18be-4fb3-9dc6-f931d180731d)
+
 
 
