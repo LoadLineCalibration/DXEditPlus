@@ -30,11 +30,14 @@ function Get_GIsRequestingExit(): Integer;
 function DynamicFindClass(const SearchText: string): string;
 function DynamicFindClassInChildren(const ParentClass: string; const SearchText: string): string;
 
-// texture skewing
+// Texture skewing
 function GenerateVertTexSkew(VertRise, VertRun, VertScale: Double; bVertNegate: Boolean): string;
 function GenerateHorzTexSkew(HorzRise, HorzRun, HorzScale: Double; bHorzNegate: Boolean): string;
 function GenerateHVTexSkew(HorzRise, HorzRun, HorzScale: Double; bHorzNegate: Boolean;
                            VertRise, VertRun, VertScale: Double; bVertNegate: Boolean): string;
+
+//
+function GetTextureSize(const TexName: string): string;
 
 function ExtractField(const fieldName, text: string): string;
 function GetActorEvent(const TextToProcess: string): string;
@@ -218,7 +221,7 @@ begin
     Result := 'Not Found';  // Начальное значение
     // Запрашиваем дочерние классы для 'Actor'
     StartFrom := ServerGetProp('Class', 'Query Parent=Actor');
-    Lines := TStringList.Create;
+    Lines := TStringList.Create();
     try
         Lines.Text := StartFrom;
         for i := 0 to Lines.Count - 1 do
@@ -299,7 +302,6 @@ var
 begin
     FormatSettings := TFormatSettings.Create();
     FormatSettings.DecimalSeparator := '.';
-
     if VertRise = 0 then
     begin
         VV := 1.0 / VertScale;
@@ -309,11 +311,9 @@ begin
     begin
         VV := 1.0 / VertScale;
         VU := -1.0 / (VertScale * VertRun / VertRise);
-
     if bVertNegate = True then
         VU := -VU;
     end;
-
     Result := Format('POLY TEXSCALE VV=%.6f VU=%.6f', [VV, VU], FormatSettings);
 end;
 
@@ -351,7 +351,6 @@ var
 begin
     FormatSettings := TFormatSettings.Create();
     FormatSettings.DecimalSeparator := '.';
-
     // Calculate Horizontal (UU, UV) skew
     if HorzRun = 0 then
     begin
@@ -362,11 +361,9 @@ begin
     begin
         UU := 1.0 / HorzScale;
         UV := -1.0 / (HorzScale * HorzRise / HorzRun);
-
         if bHorzNegate then
             UV := -UV;
     end;
-
     // Calculate Vertical (VV, VU) skew
     if VertRise = 0 then
     begin
@@ -377,41 +374,44 @@ begin
     begin
         VV := 1.0 / VertScale;
         VU := -1.0 / (VertScale * VertRun / VertRise);
-
         if bVertNegate then
             VU := -VU;
     end;
-
     // Combine results
     Result := Format('POLY TEXSCALE UU=%.6f UV=%.6f VV=%.6f VU=%.6f', [UU, UV, VV, VU], FormatSettings);
 end;
 
+function GetTextureSize(const TexName: string): string;
+begin
+    Result := ServerGetProp('Texture', 'SIZE TEXTURE=' + Trim(TexName));
+end;
 
 function ExtractField(const fieldName, text: string): string;
 var
     posStart, posEnd: Integer;
-    fieldLen: Integer;
+    searchPattern: string;
 begin
     Result := '';
-    fieldLen := Length(fieldName);
-    posStart := Pos(fieldName + '=', text);
+    searchPattern := fieldName + '='; // Формируем точный шаблон поиска
+    posStart := Pos(searchPattern, text);
     if posStart > 0 then
     begin
-        posStart := posStart + fieldLen + 1; // Move position after '='
-        if (posStart <= Length(text)) and (text[posStart] = '"') then
+        posStart := posStart + Length(searchPattern); // Смещаемся после '='
+        // Проверяем, начинается ли значение с кавычек
+        if (text[posStart] = '"') then
         begin
-            Inc(posStart); // Skip the starting quote
+            Inc(posStart); // Пропуск начальной кавычки
             posEnd := PosEx('"', text, posStart);
+
             if posEnd > 0 then
-              Result := Copy(text, posStart, posEnd - posStart);
+                Result := Copy(text, posStart, posEnd - posStart);
         end
         else
         begin
-            posEnd := PosEx(#13#10, text, posStart);
+            posEnd := PosEx(#13#10, text, posStart); // Поиск конца строки
             if posEnd = 0 then
-              posEnd := Length(text) + 1;
-            Result := Copy(text, posStart, posEnd - posStart);
-            Result := Trim(Result); // Trim only if necessary
+                posEnd := Length(text) + 1;
+            Result := Trim(Copy(text, posStart, posEnd - posStart));
         end;
     end;
 end;
