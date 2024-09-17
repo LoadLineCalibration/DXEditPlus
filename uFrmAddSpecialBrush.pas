@@ -85,18 +85,26 @@ begin
     if chkTwoSided.Checked then
     begin
         Flags := Flags or PF_TwoSided;
-        FlagsStr := FlagsStr + 'PF_TwoSided';
+        FlagsStr := FlagsStr + 'PF_TwoSided, ';
     end;
 
     // Solidity options
     case rgSolidity.ItemIndex of
-      1: Flags := Flags or PF_Semisolid; // Semi-Solid
-      2: Flags := Flags or PF_NotSolid;  // Non-Solid
-      // ItemIndex 0 corresponds to Solid; no flag needed
+        0: FlagsStr := FlagsStr + '0 (Solid), ';
+        1:
+        begin
+            Flags := Flags or PF_Semisolid;
+            FlagsStr := FlagsStr + 'PF_Semisolid, ';
+        end;
+
+        2:
+        begin
+            Flags := Flags or PF_NotSolid;
+            FlagsStr := FlagsStr + 'PF_NotSolid, ';
+        end;
     end;
 
-    ShowMessage('Integer flags: ' + IntToStr(Flags) + ' Flags as string: ' + FlagsStr);
-
+//    ShowMessage('Integer flags: ' + IntToStr(Flags) + #13#10'Flags as string: ' + FlagsStr);
     ServerCmd('BRUSH ADD FLAGS=' + IntToStr(Flags));
 
     if chkAutoClose.Checked then
