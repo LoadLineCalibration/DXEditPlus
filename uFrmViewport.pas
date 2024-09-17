@@ -145,6 +145,7 @@ begin
             sbMaxMinVP.Caption := '2';
             var VP_id := (Sender as TSpeedButton).HelpContext;
             frmMain.FitViewportsToWindow(VP_id);
+            frmMain.OpenCameras(True);
         end;
 
         False:
@@ -152,6 +153,7 @@ begin
             sbMaxMinVP.Caption := '1';
             frmMain.FitViewportsToWindow(-1);
             frmMain.CurrentExpandedViewport := -1;
+            frmMain.OpenCameras(True);
         end;
     end;
 end;
