@@ -29,6 +29,24 @@ function GetPackagesList(): TArray<string>;
 function Get_GIsRequestingExit(): Integer;
 function DynamicFindClass(const SearchText: string): string;
 function DynamicFindClassInChildren(const ParentClass: string; const SearchText: string): string;
+// Конвертер, дюймы
+function UUToInches(UU: Double): Double;
+function InchesToUU(Inches: Double): Double;
+function UUToFeet(UU: Double): Double;
+function FeetToUU(Feet: Double): Double;
+
+// сантиметры, метры
+function UUToCm(UU: Double): Double;
+function CmToUU(Cm: Double): Double;
+function UUToMeters(UU: Double): Double;
+function MetersToUU(Meters: Double): Double;
+
+// углы
+function UUToDegrees(UU: Integer): Double;
+function DegreesToUU(Degrees: Double): Integer;
+function UUToRadians(UU: Integer): Double;
+function RadiansToUU(Radians: Double): Integer;
+
 
 // Texture skewing
 function GenerateVertTexSkew(VertRise, VertRun, VertScale: Double; bVertNegate: Boolean): string;
@@ -294,6 +312,69 @@ begin
         Lines.Free();
     end;
 end;
+
+function UUToInches(UU: Double): Double;
+begin
+    Result := UU * 0.75;
+end;
+
+function InchesToUU(Inches: Double): Double;
+begin
+    Result := Inches / 0.75;
+end;
+
+function UUToFeet(UU: Double): Double;
+begin
+    Result := UU / 16;
+end;
+
+function FeetToUU(Feet: Double): Double;
+begin
+    Result := Feet * 16;
+end;
+
+// сантиметры, метры
+function UUToCm(UU: Double): Double;
+begin
+    Result := UU * 0.525;
+end;
+
+function CmToUU(Cm: Double): Double;
+begin
+    Result := Cm / 0.525;
+end;
+
+function UUToMeters(UU: Double): Double;
+begin
+    Result := UUToCm(UU) / 100;
+end;
+
+function MetersToUU(Meters: Double): Double;
+begin
+    Result := CmToUU(Meters * 100);
+end;
+
+// углы
+function UUToDegrees(UU: Integer): Double;
+begin
+    Result := (UU / 65536) * 360;
+end;
+
+function DegreesToUU(Degrees: Double): Integer;
+begin
+    Result := Round((Degrees / 360) * 65536);
+end;
+
+function UUToRadians(UU: Integer): Double;
+begin
+    Result := (UU / 65536) * 2 * Pi;
+end;
+
+function RadiansToUU(Radians: Double): Integer;
+begin
+    Result := Round((Radians / (2 * Pi)) * 65536);
+end;
+
 
 function GenerateVertTexSkew(VertRise, VertRun, VertScale: Double; bVertNegate: Boolean): string;
 var
