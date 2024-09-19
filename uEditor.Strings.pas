@@ -13,6 +13,7 @@ resourcestring
 
     // Viewport captions/Hints
     strRealTimePreview = 'RealTime Preview';
+    strLightingOnly = 'Lighting Only'; // New mode
     strWireframe = 'Wireframe';
     strTextureUsage = 'Texture Usage';
     strBSPCuts = 'BSP Cuts';
@@ -37,6 +38,8 @@ resourcestring
     strCannotFindEditPackTitle = 'Error: missing package';
     strCannotFindEditPacksTitle = 'Error: missing packages';
 
+    strRecentFileNotFound = 'Such file does not exists!';
+
     // Select actors/brushes...
     strPropertiesDifferentSelected = 'Actor properties (%d selected)...';
     strPropertiesNumSelected = '%s properties (%d selected)...';
@@ -54,6 +57,23 @@ resourcestring
     // Texture pan, scale, rotation
     strInvalidScale = 'ERROR! Invalid Scale value!';
     strInvalidScaleTitle = 'Error';
+
+    strInstallEnhancements = 'Using OpenGlDrv + EditorPatch will provide the following benefits for DXEditPlus:' + sLineBreak +
+                      '* Rendering textures as they will appear in the game' + sLineBreak +
+                      '* "Lighting only" mode' + sLineBreak +
+                      '* New actor selection features (by tag, event, etc.)' + sLineBreak +
+                      '* Several EditorEngine fixes.' + sLineBreak + sLineBreak +
+                      'Copy the following files to the DeusEx\System directory:' + sLineBreak +
+                      'OpenGLDrv.int' + sLineBreak +
+                      'OpenGLDrv.dll' + sLineBreak +
+                      'EditorPatch.dll' + sLineBreak +
+                      'EditorPatch.ini' + sLineBreak +
+                      'EditorPatch.int' + sLineBreak +
+                      'EditorPatch.u' + sLineBreak +
+                      'RenderExt.dll' + sLineBreak +
+                      'RenderExt.int' + sLineBreak +
+                      'Window.dll' + sLineBreak + sLineBreak +
+                      'Click "OK" to apply the necessary changes to the .ini file and restart DXEditPlus.';
 
 
 implementation
