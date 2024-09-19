@@ -75,6 +75,11 @@ resourcestring
                       'Window.dll' + sLineBreak + sLineBreak +
                       'Click "OK" to apply the necessary changes to the .ini file and restart DXEditPlus.';
 
+    // for converter
+    strCm = #13#10'Unreal Units:'#13#10#13#10'Dist. In Cm:'#13#10#13#10'in Meters:';
+    strInch = #13#10'Unreal Units:'#13#10#13#10'Dist. In Inches:'#13#10#13#10'in Feet:';
+
+
 
 implementation
 
