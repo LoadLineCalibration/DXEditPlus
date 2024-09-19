@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, ES.BaseControls, ES.Layouts, Vcl.ExtCtrls,
-  Vcl.Buttons, System.ImageList, Vcl.ImgList, uEditorTypes, uEditorLoader, Engine.UnCamera, Vcl.Menus;
+  Vcl.Buttons, System.ImageList, Vcl.ImgList, uEditorTypes, uEditorLoader, Engine.UnCamera, Vcl.Menus,
+  uEditor.Strings;
 
 type
   TfrmViewport = class(TForm)
@@ -32,7 +33,7 @@ type
 
     // new procedures
     procedure DrawCustomBorder();
-    procedure SetRenderingMode(NewMode: LongInt; Flags: LongInt);
+    procedure SetRenderingMode(NewMode: LongInt; Flags: LongInt; ModeName: string);
 
     // new functions
     function IsViewportActive(): Boolean;
@@ -161,26 +162,29 @@ end;
 procedure TfrmViewport.switchRenderModeClick(Sender: TObject);
 begin
     case (Sender as TSpeedButton).Tag of
-        REN_ORTHXY: SetRenderingMode(REN_ORTHXY, SHOW_NORMAL + SHOW_StandardView + SHOW_ChildWindow + SHOW_MOVINGBRUSHES);
-        REN_ORTHXZ: SetRenderingMode(REN_ORTHXZ, SHOW_NORMAL + SHOW_StandardView + SHOW_ChildWindow + SHOW_MOVINGBRUSHES);
-        REN_ORTHYZ: SetRenderingMode(REN_ORTHYZ, SHOW_NORMAL + SHOW_StandardView + SHOW_ChildWindow + SHOW_MOVINGBRUSHES);
+        REN_ORTHXY:       SetRenderingMode(REN_ORTHXY, SHOW_Regular_Mode, strTop);
+        REN_ORTHXZ:       SetRenderingMode(REN_ORTHXZ, SHOW_Regular_Mode, strFront);
+        REN_ORTHYZ:       SetRenderingMode(REN_ORTHYZ, SHOW_Regular_Mode, strSide);
 
-        REN_WIRE: SetRenderingMode(REN_WIRE, SHOW_NORMAL + SHOW_StandardView + SHOW_ChildWindow + SHOW_MOVINGBRUSHES);
-        REN_POLYS: SetRenderingMode(REN_POLYS, SHOW_NORMAL + SHOW_StandardView + SHOW_ChildWindow + SHOW_MOVINGBRUSHES);
-        REN_POLYCUTS: SetRenderingMode(REN_POLYCUTS, SHOW_NORMAL + SHOW_StandardView + SHOW_ChildWindow + SHOW_MOVINGBRUSHES);
-        REN_PLAINTEX: SetRenderingMode(REN_PLAINTEX, SHOW_NORMAL + SHOW_StandardView + SHOW_ChildWindow + SHOW_MOVINGBRUSHES);
-        REN_DYNLIGHT: SetRenderingMode(REN_DYNLIGHT, SHOW_NORMAL + SHOW_StandardView + SHOW_ChildWindow + SHOW_MOVINGBRUSHES);
-        REN_ZONES: SetRenderingMode(REN_ZONES, SHOW_NORMAL + SHOW_StandardView + SHOW_ChildWindow + SHOW_MOVINGBRUSHES);
-        REN_LightingOnly: SetRenderingMode(REN_LightingOnly, SHOW_NORMAL + SHOW_StandardView + SHOW_ChildWindow + SHOW_MOVINGBRUSHES);
+        REN_WIRE:         SetRenderingMode(REN_WIRE, SHOW_Regular_Mode, strWireframe);
+        REN_POLYS:        SetRenderingMode(REN_POLYS, SHOW_Regular_Mode, strTextureUsage);
+        REN_POLYCUTS:     SetRenderingMode(REN_POLYCUTS, SHOW_Regular_Mode, strBSPCuts);
+        REN_PLAINTEX:     SetRenderingMode(REN_PLAINTEX, SHOW_Regular_Mode, strTextured);
+        REN_DYNLIGHT:     SetRenderingMode(REN_DYNLIGHT, SHOW_Regular_Mode, strDynLight);
+        REN_ZONES:        SetRenderingMode(REN_ZONES, SHOW_Regular_Mode, strZonesPortals);
+        REN_LightingOnly: SetRenderingMode(REN_LightingOnly, SHOW_Regular_Mode, strLightingOnly);
     end;
 
     ServerCmd('LEVEL REDRAW');
 end;
 
-procedure TfrmViewport.SetRenderingMode(NewMode: LongInt; Flags: LongInt);
+procedure TfrmViewport.SetRenderingMode(NewMode: LongInt; Flags: LongInt; ModeName: string);
 begin
     frmMain.OpenCamera(False, ViewportContainer.Handle, 0, 0,
                        Width, Height, Flags, NewMode, Caption);
+
+    ViewportHeader.Tag := Flags;
+    ViewportHeader.Caption := ModeName + ' ' + ViewportHeader.Tag.ToString;
 end;
 
 procedure TfrmViewport.SKYLINK1Click(Sender: TObject);
