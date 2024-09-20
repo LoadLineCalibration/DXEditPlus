@@ -212,6 +212,7 @@ object frmViewport: TfrmViewport
       PressedImageIndex = 12
       SelectedImageIndex = 12
       Spacing = 0
+      OnClick = sbRealtimeClick
     end
     object sbLightingOnly: TSpeedButton
       Tag = 12

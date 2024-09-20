@@ -33,7 +33,7 @@ type
 
     // new procedures
     procedure DrawCustomBorder();
-    procedure SetRenderingMode(NewMode: LongInt; Flags: LongInt; ModeName: string);
+    procedure SetRenderingMode(NewMode: LongInt; Flags: LongInt);
 
     // new functions
     function IsViewportActive(): Boolean;
@@ -44,12 +44,15 @@ type
     procedure SKYLINK1Click(Sender: TObject);
     procedure SKYUNLINK1Click(Sender: TObject);
     procedure sbLinkSkyboxClick(Sender: TObject);
+    procedure sbRealtimeClick(Sender: TObject);
   private
     { Private declarations }
   protected
 //    procedure WndProc(var Msg: TMessage); override;
   public
-    hwndTarget: HWND;
+    var ViewportFlags: LongInt;
+    var ViewportMode: LongInt;
+    //hwndTarget: HWND;
     { Public declarations }
   end;
 
@@ -92,7 +95,7 @@ begin
         OffsetRect(R, -R.Left, -R.Top);
 
         // Выбираем цвет рамки в зависимости от активности окна
-        if IsViewportActive() then
+        if IsViewportActive() = True then
         begin
             var ActiveColor := RGB(255, 255, 255);
             Brush := CreateSolidBrush(ActiveColor);  // Яркая рамка для активного окна
@@ -143,7 +146,7 @@ begin
     case sbMaxMinVP.Down of
         True:
         begin
-            sbMaxMinVP.Caption := '2';
+            sbMaxMinVP.Caption := '2'; // Marlett font
             var VP_id := (Sender as TSpeedButton).HelpContext;
             frmMain.FitViewportsToWindow(VP_id);
             frmMain.OpenCameras(True);
@@ -159,32 +162,65 @@ begin
     end;
 end;
 
+procedure TfrmViewport.sbRealtimeClick(Sender: TObject);
+begin
+    case sbRealtime.Down of
+        True: begin
+            ViewportFlags := ViewportFlags or SHOW_RealTime;
+            SetRenderingMode(ViewportMode, ViewportFlags);
+        end;
+
+        False: begin
+            ViewportFlags := ViewportFlags and not SHOW_RealTime;
+            SetRenderingMode(ViewportMode, ViewportFlags);
+        end;
+    end;
+end;
+
 procedure TfrmViewport.switchRenderModeClick(Sender: TObject);
 begin
     case (Sender as TSpeedButton).Tag of
-        REN_ORTHXY:       SetRenderingMode(REN_ORTHXY, SHOW_Regular_Mode, strTop);
-        REN_ORTHXZ:       SetRenderingMode(REN_ORTHXZ, SHOW_Regular_Mode, strFront);
-        REN_ORTHYZ:       SetRenderingMode(REN_ORTHYZ, SHOW_Regular_Mode, strSide);
+        REN_ORTHXY:       SetRenderingMode(REN_ORTHXY, SHOW_Regular_Mode);
+        REN_ORTHXZ:       SetRenderingMode(REN_ORTHXZ, SHOW_Regular_Mode);
+        REN_ORTHYZ:       SetRenderingMode(REN_ORTHYZ, SHOW_Regular_Mode);
 
-        REN_WIRE:         SetRenderingMode(REN_WIRE, SHOW_Regular_Mode, strWireframe);
-        REN_POLYS:        SetRenderingMode(REN_POLYS, SHOW_Regular_Mode, strTextureUsage);
-        REN_POLYCUTS:     SetRenderingMode(REN_POLYCUTS, SHOW_Regular_Mode, strBSPCuts);
-        REN_PLAINTEX:     SetRenderingMode(REN_PLAINTEX, SHOW_Regular_Mode, strTextured);
-        REN_DYNLIGHT:     SetRenderingMode(REN_DYNLIGHT, SHOW_Regular_Mode, strDynLight);
-        REN_ZONES:        SetRenderingMode(REN_ZONES, SHOW_Regular_Mode, strZonesPortals);
-        REN_LightingOnly: SetRenderingMode(REN_LightingOnly, SHOW_Regular_Mode, strLightingOnly);
+        REN_WIRE:         SetRenderingMode(REN_WIRE, SHOW_Regular_Mode);
+        REN_POLYS:        SetRenderingMode(REN_POLYS, SHOW_Regular_Mode);
+        REN_POLYCUTS:     SetRenderingMode(REN_POLYCUTS, SHOW_Regular_Mode);
+        REN_PLAINTEX:     SetRenderingMode(REN_PLAINTEX, SHOW_Regular_Mode);
+        REN_DYNLIGHT:     SetRenderingMode(REN_DYNLIGHT, SHOW_Regular_Mode);
+        REN_ZONES:        SetRenderingMode(REN_ZONES, SHOW_Regular_Mode);
+        REN_LightingOnly: SetRenderingMode(REN_LightingOnly, SHOW_Regular_Mode);
     end;
 
     ServerCmd('LEVEL REDRAW');
 end;
 
-procedure TfrmViewport.SetRenderingMode(NewMode: LongInt; Flags: LongInt; ModeName: string);
+procedure TfrmViewport.SetRenderingMode(NewMode: LongInt; Flags: LongInt);
+var
+    ViewportModeText: string;
 begin
+    case NewMode of
+        REN_ORTHXY: ViewportModeText := strTop;
+        REN_ORTHXZ: ViewportModeText := strFront;
+        REN_ORTHYZ: ViewportModeText := strSide;
+
+        REN_WIRE:   ViewportModeText := strWireframe;
+        REN_POLYS:  ViewportModeText := strTextureUsage;
+        REN_POLYCUTS: ViewportModeText := strBSPCuts;
+        REN_PLAINTEX: ViewportModeText := strTextured;
+        REN_DYNLIGHT: ViewportModeText := strDynLight;
+        REN_ZONES:  ViewportModeText := strZonesPortals;
+        REN_LightingOnly: ViewportModeText := strLightingOnly;
+    end;
+
     frmMain.OpenCamera(False, ViewportContainer.Handle, 0, 0,
                        Width, Height, Flags, NewMode, Caption);
 
-    ViewportHeader.Tag := Flags;
-    ViewportHeader.Caption := ModeName + ' ' + ViewportHeader.Tag.ToString;
+    ViewportFlags := Flags;  // save mode and flags here
+    ViewportMode  := NewMode;
+
+    ViewportHeader.Caption := ViewportModeText + ' Flags:' + ViewportFlags.ToString + ' Mode:' + ViewportMode.ToString;
 end;
 
 procedure TfrmViewport.SKYLINK1Click(Sender: TObject);
