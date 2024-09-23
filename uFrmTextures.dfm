@@ -2,7 +2,7 @@ object frmTextures: TfrmTextures
   Left = 0
   Top = 0
   Caption = 'frmTextures'
-  ClientHeight = 631
+  ClientHeight = 445
   ClientWidth = 473
   Color = clBtnFace
   Constraints.MinHeight = 300
@@ -23,7 +23,7 @@ object frmTextures: TfrmTextures
     Left = 0
     Top = 104
     Width = 473
-    Height = 527
+    Height = 341
     Align = alClient
     TabOrder = 0
     FrameStyle = Etched
@@ -31,7 +31,7 @@ object frmTextures: TfrmTextures
       Left = 454
       Top = 2
       Width = 17
-      Height = 523
+      Height = 337
       Align = alRight
       Kind = sbVertical
       PageSize = 0
@@ -42,10 +42,10 @@ object frmTextures: TfrmTextures
       Left = 2
       Top = 2
       Width = 452
-      Height = 523
+      Height = 337
       Align = alClient
       TabOrder = 1
-      Caption = #1058#1077#1082#1089#1090#1091#1088#1099
+      Caption = 'No textures loaded'
       FrameStyle = None
     end
   end
@@ -156,6 +156,7 @@ object frmTextures: TfrmTextures
         AllowAllUp = True
         ImageIndex = 6
         Style = tbsCheck
+        OnClick = tbRealTimePreviewClick
       end
     end
   end
@@ -217,7 +218,8 @@ object frmTextures: TfrmTextures
     object File1: TMenuItem
       Caption = 'File'
       object File2: TMenuItem
-        Caption = 'New'
+        Caption = 'Create New Texture...'
+        OnClick = File2Click
       end
       object Open1: TMenuItem
         Caption = 'Open...'
@@ -227,6 +229,29 @@ object frmTextures: TfrmTextures
       end
       object N3: TMenuItem
         Caption = '-'
+      end
+      object Recentfiles1: TMenuItem
+        Caption = 'Recent files'
+        object RecentUtx0: TMenuItem
+        end
+        object RecentUtx1: TMenuItem
+        end
+        object RecentUtx2: TMenuItem
+        end
+        object RecentUtx3: TMenuItem
+        end
+        object RecentUtx4: TMenuItem
+        end
+        object RecentUtx5: TMenuItem
+        end
+        object RecentUtx6: TMenuItem
+        end
+        object RecentUtx7: TMenuItem
+        end
+        object RecentUtx8: TMenuItem
+        end
+        object RecentUtx9: TMenuItem
+        end
       end
     end
     object View1: TMenuItem
@@ -270,9 +295,10 @@ object frmTextures: TfrmTextures
   object TexturePopup: TPopupMenu
     OnPopup = TexturePopupPopup
     Left = 290
-    Top = 403
+    Top = 375
     object mnuTextureProperties: TMenuItem
       Caption = '<Edit texture>'
+      OnClick = mnuTexturePropertiesClick
     end
     object N1: TMenuItem
       Caption = '-'
@@ -295,6 +321,7 @@ object frmTextures: TfrmTextures
     end
     object Copynametoclipboard1: TMenuItem
       Caption = 'Copy name to clipboard'
+      OnClick = Copynametoclipboard1Click
     end
   end
   object ImageList1: TImageList

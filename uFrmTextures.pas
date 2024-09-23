@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, ES.BaseControls, ES.Layouts, Vcl.Menus, Vcl.StdCtrls,
-  uEditorLoader, uEditor.Strings, uEditorTypes, Engine.UnCamera, Vcl.ComCtrls, Vcl.ToolWin, System.ImageList, Vcl.ImgList;
+  uEditorLoader, uEditor.Strings, uEditorTypes, Engine.UnCamera, Vcl.ComCtrls, Vcl.ToolWin, System.ImageList,
+  Vcl.ImgList, Vcl.Clipbrd;
 
 type
   TfrmTextures = class(TForm)
@@ -52,6 +53,17 @@ type
     tbTextureProperties: TToolButton;
     ToolButton7: TToolButton;
     tbRealTimePreview: TToolButton;
+    Recentfiles1: TMenuItem;
+    RecentUtx0: TMenuItem;
+    RecentUtx1: TMenuItem;
+    RecentUtx2: TMenuItem;
+    RecentUtx3: TMenuItem;
+    RecentUtx4: TMenuItem;
+    RecentUtx5: TMenuItem;
+    RecentUtx6: TMenuItem;
+    RecentUtx7: TMenuItem;
+    RecentUtx8: TMenuItem;
+    RecentUtx9: TMenuItem;
 
     procedure UpdateBrowserCamera(Cmd: string);
     procedure RefreshTextureSet(PackageName: string; GroupName: string);
@@ -71,6 +83,10 @@ type
     procedure texSize512Click(Sender: TObject);
     procedure tbLoadEntirePackageClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
+    procedure File2Click(Sender: TObject);
+    procedure Copynametoclipboard1Click(Sender: TObject);
+    procedure mnuTexturePropertiesClick(Sender: TObject);
+    procedure tbRealTimePreviewClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -87,6 +103,8 @@ implementation
 
 {$R *.dfm}
 
+uses uFrmNewTexture, uFrmTextureProperties;
+
 procedure TfrmTextures.cmbGroupsChange(Sender: TObject);
 begin
     UpdateBrowserCamera('UPDATE');
@@ -99,6 +117,16 @@ begin
         TexScrollBar.Position := 0;
         RefreshTextureSet(cmbPackages.Items[cmbPackages.ItemIndex], cmbGroups.Items[cmbGroups.ItemIndex]);
     end;
+end;
+
+procedure TfrmTextures.Copynametoclipboard1Click(Sender: TObject);
+begin
+    Clipboard.AsText := GetCurrentTextureFull();
+end;
+
+procedure TfrmTextures.File2Click(Sender: TObject);
+begin
+    frmNewTexture.ShowModal();
 end;
 
 procedure TfrmTextures.FormCreate(Sender: TObject);
@@ -170,6 +198,15 @@ begin
         Result := Trim(cmbPackages.Items[cmbPackages.ItemIndex]);
 end;
 
+procedure TfrmTextures.mnuTexturePropertiesClick(Sender: TObject);
+begin
+    var Tex := GetCurrentTextureFull();
+    ServerCmd('HOOK TEXTUREPROPERTIES TEXTURE=' + Tex);
+    frmTextureProperties.SetTexture(Tex);
+//    Ed.ServerExec "HOOK TEXTUREPROPERTIES TEXTURE=" & Ed.ServerGetProp("Texture", "CurrentTexture")
+//    frmTexProp.SetTexture Ed.ServerGetProp("Texture", "CurrentTexture")
+end;
+
 procedure TfrmTextures.TexScrollbarChange(Sender: TObject);
 begin
     UpdateBrowserCamera('UPDATE');
@@ -194,12 +231,24 @@ begin
     RefreshTextureSet(cmbPackages.Items[cmbPackages.ItemIndex], '');
 end;
 
+procedure TfrmTextures.tbRealTimePreviewClick(Sender: TObject);
+begin
+    UpdateBrowserCamera('UPDATE');
+end;
+
 procedure TfrmTextures.UpdateBrowserCamera(Cmd: string);
 var
-    Size: Integer;
     Temp: Integer;
     S: string;
 begin
+    var Size := 0;
+    var Flags: LongInt;
+
+    case tbRealTimePreview.Down of
+        True:  Flags := SHOW_NORMAL + SHOW_ChildWindow + SHOW_NOBUTTONS + SHOW_RealTime;
+        False: Flags := SHOW_NORMAL + SHOW_ChildWindow + SHOW_NOBUTTONS;
+    end;
+
     if texSize32.Checked = true then
         Size := 32
     else if texSize64.Checked = True then
@@ -214,7 +263,7 @@ begin
         ServerCmd('CAMERA ' + Cmd + ' X=0 Y=0' +
             ' XR=' + IntToStr(TextureBrowser.Width) +
             ' YR=' + IntToStr(TextureBrowser.Height) +
-            ' FLAGS=' + IntToStr(SHOW_NORMAL + SHOW_ChildWindow + SHOW_NOBUTTONS) +
+            ' FLAGS=' + IntToStr(Flags) +
             ' HWND=' + IntToStr(TextureBrowser.Handle) +
             ' MISC1=' + IntToStr(Size) +
             ' MISC2=' + IntToStr(TexScrollBar.Position) +
