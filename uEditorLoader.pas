@@ -19,6 +19,7 @@ procedure ServerSetProp(const Topic, Item, Value: string); // Topic = Объект, It
 
 // Utilities
 function ExtractCommaString(var S: string): string;
+function ExtractString(var S: string): string;
 function NumSelectedActors(): Integer;
 function NumSelectedPolys(): Integer;
 function SelectedIsMover(): Boolean;
@@ -132,6 +133,28 @@ begin
     begin
         Result := S;  // Если запятая не найдена, возвращаем всю строку
         S := '';  // Очищаем исходную строку
+    end;
+end;
+
+function ExtractString(var S: string): string;
+var
+    i, j: Integer;
+begin
+    S := Trim(S);
+    i := Pos(' ', S);
+    j := Pos(#9, S);
+
+    if (i = 0) or ((j <> 0) and (j < i)) then
+        i := j;
+    if i <> 0 then
+    begin
+        Result := Copy(S, 1, i - 1);
+        S := Copy(S, i + 1, Length(S));
+    end
+    else
+    begin
+        Result := S;
+        S := '';
     end;
 end;
 
@@ -336,12 +359,12 @@ end;
 // сантиметры, метры
 function UUToCm(UU: Double): Double;
 begin
-    Result := UU * 0.525;
+    Result := UU * 1.9046875;  // 1 UU = 1.9046875 см
 end;
 
 function CmToUU(Cm: Double): Double;
 begin
-    Result := Cm / 0.525;
+    Result := Cm / 1.9046875;  // 1 UU = 1.9046875 см
 end;
 
 function UUToMeters(UU: Double): Double;
