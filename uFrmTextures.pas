@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, ES.BaseControls, ES.Layouts, Vcl.Menus, Vcl.StdCtrls,
   uEditorLoader, uEditor.Strings, uEditorTypes, Engine.UnCamera, Vcl.ComCtrls, Vcl.ToolWin, System.ImageList,
-  Vcl.ImgList, Vcl.Clipbrd;
+  Vcl.ImgList, Vcl.Clipbrd, Winapi.ShellAPI;
 
 type
   TfrmTextures = class(TForm)
@@ -46,12 +46,9 @@ type
     ToolButton5: TToolButton;
     tbLoadEntirePackage: TToolButton;
     ToolButton8: TToolButton;
-    tbNextGroup: TToolButton;
-    tbPrevGroup: TToolButton;
     Label1: TLabel;
     ToolButton1: TToolButton;
     tbTextureProperties: TToolButton;
-    ToolButton7: TToolButton;
     tbRealTimePreview: TToolButton;
     Recentfiles1: TMenuItem;
     RecentUtx0: TMenuItem;
@@ -64,6 +61,12 @@ type
     RecentUtx7: TMenuItem;
     RecentUtx8: TMenuItem;
     RecentUtx9: TMenuItem;
+    ToolButton2: TToolButton;
+    tbTexturesOnlineSearch: TToolButton;
+    btnPrevTexGroup: TButton;
+    btnNextTexGroup: TButton;
+    btnPrevPackage: TButton;
+    btnNextPackage: TButton;
 
     procedure UpdateBrowserCamera(Cmd: string);
     procedure RefreshTextureSet(PackageName: string; GroupName: string);
@@ -87,6 +90,11 @@ type
     procedure Copynametoclipboard1Click(Sender: TObject);
     procedure mnuTexturePropertiesClick(Sender: TObject);
     procedure tbRealTimePreviewClick(Sender: TObject);
+    procedure tbTexturesOnlineSearchClick(Sender: TObject);
+    procedure btnPrevPackageClick(Sender: TObject);
+    procedure btnNextPackageClick(Sender: TObject);
+    procedure btnPrevTexGroupClick(Sender: TObject);
+    procedure btnNextTexGroupClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -104,6 +112,7 @@ implementation
 {$R *.dfm}
 
 uses uFrmNewTexture, uFrmTextureProperties;
+
 
 procedure TfrmTextures.cmbGroupsChange(Sender: TObject);
 begin
@@ -142,12 +151,12 @@ procedure TfrmTextures.FormMouseWheel(Sender: TObject; Shift: TShiftState; Wheel
 begin
     if WheelDelta > 1 then
     begin
-        TexScrollbar.Position := TexScrollbar.Position - 25;
+        TexScrollbar.Position := TexScrollbar.Position - 45;
         UpdateBrowserCamera('UPDATE');
         Handled := True;
     end else
     begin
-        TexScrollbar.Position := TexScrollbar.Position + 25;
+        TexScrollbar.Position := TexScrollbar.Position + 45;
         UpdateBrowserCamera('UPDATE');
         Handled := True;
     end;
@@ -188,7 +197,7 @@ begin
         Result := Trim(cmbGroups.Items[cmbGroups.ItemIndex]);
 end;
 
-function TfrmTextures.GetCurrentTextureSet: string;
+function TfrmTextures.GetCurrentTextureSet(): string;
 begin
     if cmbPackages.ItemIndex < 0 then
         Result := ''
@@ -201,10 +210,9 @@ end;
 procedure TfrmTextures.mnuTexturePropertiesClick(Sender: TObject);
 begin
     var Tex := GetCurrentTextureFull();
+
     ServerCmd('HOOK TEXTUREPROPERTIES TEXTURE=' + Tex);
     frmTextureProperties.SetTexture(Tex);
-//    Ed.ServerExec "HOOK TEXTUREPROPERTIES TEXTURE=" & Ed.ServerGetProp("Texture", "CurrentTexture")
-//    frmTexProp.SetTexture Ed.ServerGetProp("Texture", "CurrentTexture")
 end;
 
 procedure TfrmTextures.TexScrollbarChange(Sender: TObject);
@@ -234,6 +242,16 @@ end;
 procedure TfrmTextures.tbRealTimePreviewClick(Sender: TObject);
 begin
     UpdateBrowserCamera('UPDATE');
+end;
+
+procedure TfrmTextures.tbTexturesOnlineSearchClick(Sender: TObject);
+begin
+    if MessageBox(0,
+        'Are you sure you want to open the webpage to search for textures?',
+        'Question', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+    begin
+        ShellExecute(0, 'open', 'https://dxgalaxy.org/docs/reference/textures/', nil, nil, SW_SHOWNORMAL);
+    end;
 end;
 
 procedure TfrmTextures.UpdateBrowserCamera(Cmd: string);
@@ -323,6 +341,47 @@ begin
 
     UpdateBrowserCamera('UPDATE');
     bRefreshing := False;
+end;
+
+procedure TfrmTextures.btnNextPackageClick(Sender: TObject);
+begin
+    if cmbPackages.ItemIndex = cmbPackages.Items.Count - 1 then
+        cmbPackages.ItemIndex := 0
+    else
+        cmbPackages.ItemIndex := cmbPackages.ItemIndex + 1;
+
+    cmbPackagesChange(self);
+end;
+
+procedure TfrmTextures.btnPrevPackageClick(Sender: TObject);
+begin
+    if cmbPackages.ItemIndex = 0 then
+        cmbPackages.ItemIndex := cmbPackages.Items.Count - 1
+    else
+        cmbPackages.ItemIndex := cmbPackages.ItemIndex - 1;
+
+    cmbPackagesChange(self);
+end;
+
+procedure TfrmTextures.btnNextTexGroupClick(Sender: TObject);
+begin
+    if cmbGroups.ItemIndex = cmbGroups.Items.Count - 1 then
+        cmbGroups.ItemIndex := 0
+    else
+        cmbGroups.ItemIndex := cmbGroups.ItemIndex + 1;
+
+    cmbGroupsChange(self);
+end;
+
+
+procedure TfrmTextures.btnPrevTexGroupClick(Sender: TObject);
+begin
+    if cmbGroups.ItemIndex = 0 then
+        cmbGroups.ItemIndex := cmbGroups.Items.Count - 1
+    else
+        cmbGroups.ItemIndex := cmbGroups.ItemIndex - 1;
+
+    cmbGroupsChange(self);
 end;
 
 end.
