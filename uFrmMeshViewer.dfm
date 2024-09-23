@@ -24,9 +24,6 @@ object frmMeshViewer: TfrmMeshViewer
     TabOrder = 0
     OnResize = MeshViewportResize
     FrameStyle = Chess
-    ExplicitLeft = -3
-    ExplicitTop = 187
-    ExplicitWidth = 499
   end
   object GroupBox1: TGroupBox
     AlignWithMargins = True
@@ -43,7 +40,6 @@ object frmMeshViewer: TfrmMeshViewer
     HeaderFont.Name = 'Segoe UI'
     HeaderFont.Style = [fsBold]
     TabOrder = 1
-    ExplicitWidth = 493
     object Label1: TLabel
       AlignWithMargins = True
       Left = 5
