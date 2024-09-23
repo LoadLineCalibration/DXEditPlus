@@ -47,7 +47,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
-        <DCC_ExeOutput>C:\LANG\DelphiProjects\DxEdit\Win32\Debug\System\</DCC_ExeOutput>
+        <DCC_ExeOutput>C:\Games\DeusEx\System\</DCC_ExeOutput>
         <DCC_E>false</DCC_E>
         <DCC_N>false</DCC_N>
         <DCC_S>false</DCC_S>
@@ -80,19 +80,22 @@
         <DCC_RemoteDebug>true</DCC_RemoteDebug>
         <DCC_IntegerOverflowCheck>true</DCC_IntegerOverflowCheck>
         <DCC_RangeChecking>true</DCC_RangeChecking>
+        <VerInfo_Locale>1049</VerInfo_Locale>
+        <VerInfo_Keys>FileVersion=1.0.0.0</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
-        <VerInfo_Build>663</VerInfo_Build>
+        <VerInfo_Build>989</VerInfo_Build>
         <VerInfo_MajorVer>2024</VerInfo_MajorVer>
         <VerInfo_MinorVer>9</VerInfo_MinorVer>
-        <VerInfo_Release>6</VerInfo_Release>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=2024.9.6.663;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;LastCompiledTime=2024.09.06 18:04:52</VerInfo_Keys>
+        <VerInfo_Release>23</VerInfo_Release>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=2024.9.23.989;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;LastCompiledTime=2024.09.23 16:44:21</VerInfo_Keys>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <AppExecutionLevel>requireAdministrator</AppExecutionLevel>
         <DCC_NXCompat>false</DCC_NXCompat>
+        <Icon_MainIcon>DXEditPlus_Icon.ico</Icon_MainIcon>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -168,6 +171,27 @@
             <Form>frm2DShapeEditor</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="DXEditPlus.Helpers.pas"/>
+        <DCCReference Include="uFrmNewMap.pas">
+            <Form>frmNewMap</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uFrmAddSpecialBrush.pas">
+            <Form>frmAddSpecialBrush</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uFrmMeshViewer.pas">
+            <Form>frmMeshViewer</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uFrmNewTexture.pas">
+            <Form>frmNewTexture</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uFrmTextureProperties.pas">
+            <Form>frmTextureProperties</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -194,7 +218,7 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="4">
-                <DeployFile LocalName="Win32\Debug\System\DXEditPlus.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="C:\Games\DeusEx\System\DXEditPlus.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>DXEditPlus.exe</RemoteName>
                         <Overwrite>true</Overwrite>
