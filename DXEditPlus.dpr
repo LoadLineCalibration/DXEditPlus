@@ -20,7 +20,13 @@ uses
   Engine.UnObj in 'Engine.UnObj.pas',
   Engine.UnCamera in 'Engine.UnCamera.pas',
   Editor.Editor in 'Editor.Editor.Pas',
-  uFrm2DShapeEditor in 'uFrm2DShapeEditor.pas' {frm2DShapeEditor};
+  uFrm2DShapeEditor in 'uFrm2DShapeEditor.pas' {frm2DShapeEditor},
+  DXEditPlus.Helpers in 'DXEditPlus.Helpers.pas',
+  uFrmNewMap in 'uFrmNewMap.pas' {frmNewMap},
+  uFrmAddSpecialBrush in 'uFrmAddSpecialBrush.pas' {frmAddSpecialBrush},
+  uFrmMeshViewer in 'uFrmMeshViewer.pas' {frmMeshViewer},
+  uFrmNewTexture in 'uFrmNewTexture.pas' {frmNewTexture},
+  uFrmTextureProperties in 'uFrmTextureProperties.pas' {frmTextureProperties};
 
 {$R *.res}
 {$SETPEOSVERSION 5.1} // Windows XP
@@ -39,6 +45,11 @@ begin
   Application.CreateForm(TfrmSurfaceProps, frmSurfaceProps);
   Application.CreateForm(TfrmBrushBuilder, frmBrushBuilder);
   Application.CreateForm(Tfrm2DShapeEditor, frm2DShapeEditor);
+  Application.CreateForm(TfrmNewMap, frmNewMap);
+  Application.CreateForm(TfrmAddSpecialBrush, frmAddSpecialBrush);
+  Application.CreateForm(TfrmMeshViewer, frmMeshViewer);
+  Application.CreateForm(TfrmNewTexture, frmNewTexture);
+  Application.CreateForm(TfrmTextureProperties, frmTextureProperties);
   Application.Run;
   ReportMemoryLeaksOnShutdown := True;
 end.
