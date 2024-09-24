@@ -79,6 +79,14 @@ resourcestring
     strCm = #13#10'Unreal Units:'#13#10#13#10'Dist. In Cm:'#13#10#13#10'in Meters:';
     strInch = #13#10'Unreal Units:'#13#10#13#10'Dist. In Inches:'#13#10#13#10'in Feet:';
 
+    // Open/Save
+    strMaps = 'Deus Ex maps (*.dx)|*.dx|All files (*.*)|*.*';
+    strOpenMap = 'Open map file';
+    strSaveMapAs = 'Save map as...';
+
+    strTextures =  'UTX packages (*.utx)|*.utx|All files (*.*)|*.*';
+    strOpenUtx = 'Open texture package';
+    strSaveUtxAs = 'Save texture package as...';
 
 
 implementation
