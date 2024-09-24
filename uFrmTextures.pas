@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, ES.BaseControls, ES.Layouts, Vcl.Menus, Vcl.StdCtrls,
   uEditorLoader, uEditor.Strings, uEditorTypes, Engine.UnCamera, Vcl.ComCtrls, Vcl.ToolWin, System.ImageList,
-  Vcl.ImgList, Vcl.Clipbrd, Winapi.ShellAPI;
+  Vcl.ImgList, Vcl.Clipbrd, Winapi.ShellAPI, System.IOUtils;
 
 type
   TfrmTextures = class(TForm)
@@ -95,6 +95,7 @@ type
     procedure btnNextPackageClick(Sender: TObject);
     procedure btnPrevTexGroupClick(Sender: TObject);
     procedure btnNextTexGroupClick(Sender: TObject);
+    procedure tbSaveUTX_AsClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -111,7 +112,7 @@ implementation
 
 {$R *.dfm}
 
-uses uFrmNewTexture, uFrmTextureProperties;
+uses uFrmNewTexture, uFrmTextureProperties, uFrmMain;
 
 
 procedure TfrmTextures.cmbGroupsChange(Sender: TObject);
@@ -244,11 +245,48 @@ begin
     UpdateBrowserCamera('UPDATE');
 end;
 
+procedure TfrmTextures.tbSaveUTX_AsClick(Sender: TObject);
+begin
+    var UTXName: string; // Имя файла
+    var PackName := cmbPackages.Items[cmbPackages.ItemIndex]; // выбранный пакет
+
+    // Если имя содержит пробел, используем часть до пробела.
+    if Pos(' ', PackName) > 0 then
+        UTXName := Copy(PackName, 1, Pos(' ', PackName) - 1)
+    else
+        UTXName := PackName;
+
+    if Trim(UTXName) = '' then
+    begin
+        MessageBox(0, 'Select texture package first!', 'Error', MB_OK + MB_ICONSTOP + MB_TOPMOST);
+        Exit();
+    end;
+
+    with frmMain.SaveDlg do
+    begin
+        Title := strSaveUtxAs;
+        Filter := strTextures;
+        FilterIndex := 0;
+
+        UTXName := PackName + '.utx';
+        FileName := UTXName;
+
+        if Execute() = True then
+        begin
+            ServerCmd('OBJ SAVEPACKAGE PACKAGE=' + AnsiQuotedStr(PackName, '"') + ' FILE=' + AnsiQuotedStr(FileName, '"')); // отправить команду для сохранения.
+
+            if TFile.Exists(FileName) = False then
+                 MessageBox(Handle, PChar('Unable to save this file: ' + FileName), 'Error', MB_OK + MB_ICONSTOP + MB_TOPMOST);
+        end
+//        else
+//          Application.BringToFront();
+    end;
+end;
+
 procedure TfrmTextures.tbTexturesOnlineSearchClick(Sender: TObject);
 begin
-    if MessageBox(0,
-        'Are you sure you want to open the webpage to search for textures?',
-        'Question', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+    if MessageBox(0,'Are you sure you want to open the webpage to search for textures?','Question',
+       MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
     begin
         ShellExecute(0, 'open', 'https://dxgalaxy.org/docs/reference/textures/', nil, nil, SW_SHOWNORMAL);
     end;

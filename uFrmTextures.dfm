@@ -95,6 +95,7 @@ object frmTextures: TfrmTextures
         Top = 0
         Hint = 'Save .utx package as...'
         ImageIndex = 1
+        OnClick = tbSaveUTX_AsClick
       end
       object ToolButton5: TToolButton
         Left = 54
