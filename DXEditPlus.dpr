@@ -49,7 +49,6 @@ begin
   Application.CreateForm(TfrmAddSpecialBrush, frmAddSpecialBrush);
   Application.CreateForm(TfrmMeshViewer, frmMeshViewer);
   Application.CreateForm(TfrmNewTexture, frmNewTexture);
-  Application.CreateForm(TfrmTextureProperties, frmTextureProperties);
   Application.Run;
   ReportMemoryLeaksOnShutdown := True;
 end.
