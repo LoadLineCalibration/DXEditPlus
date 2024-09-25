@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, ES.BaseControls, ES.Layouts, Vcl.StdCtrls, uEditorLoader,
-  Engine.UnCamera;
+  Engine.UnCamera, Vcl.ExtCtrls;
 
 type
   TfrmTextureProperties = class(TForm)
@@ -14,20 +14,32 @@ type
     TextureVP: TEsPanel;
     cmbZoom: TComboBox;
     Label1: TLabel;
+    btnClose: TButton;
+    pnlTexProps: TEsPanel;
+    EsPanel2: TEsPanel;
+    Splitter1: TSplitter;
 
+    // New procedures
     procedure SetTexture(const aName: string);
+    procedure IntegrateWindowToPanel(ChildWindow: HWND; ParentPanel: HWND);
+
+
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btnClearClick(Sender: TObject);
     procedure cmbZoomChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure btnCloseClick(Sender: TObject);
+    procedure Splitter1Moved(Sender: TObject);
   private
     { Private declarations }
   public
+    var PSHandle: HWND;
     { Public declarations }
   end;
 
 var
   frmTextureProperties: TfrmTextureProperties;
+
 
 implementation
 
@@ -57,7 +69,7 @@ begin
 
         ServerCmd('CAMERA OPEN ' +
             ' TEXTURE=' + AnsiQuotedStr(Caption, '"') +
-            ' NAME=TexPropCam X=0 Y=0' +
+            ' NAME=TexPropCam_' + IntToStr(TextureVP.Handle) +' X=0 Y=0' +
             ' XR=' + IntToStr(TextureVP.Width)  +
             ' YR=' + IntToStr(TextureVP.Height) +
             ' REN=' + Trim(IntToStr(REN_TEXVIEW)) +
@@ -71,9 +83,46 @@ begin
         Close();
 end;
 
+procedure TfrmTextureProperties.Splitter1Moved(Sender: TObject);
+begin
+    if PSHandle = 0 then Exit();
+
+    var Rect: TRect;
+    Winapi.Windows.GetClientRect(pnlTexProps.Handle, Rect);
+
+    // Устанавливаем размеры дочернего окна под размеры панели
+    SetWindowPos(PSHandle, HWND_TOP, Rect.Left, Rect.Top, Rect.Right - Rect.Left, Rect.Bottom - Rect.Top, SWP_NOZORDER or SWP_NOACTIVATE);
+end;
+
+procedure TfrmTextureProperties.IntegrateWindowToPanel(ChildWindow: HWND; ParentPanel: HWND);
+var
+    Style: LongInt;
+begin
+    Style := GetWindowLong(ChildWindow, GWL_STYLE);
+    Style := Style and not (WS_CAPTION or WS_THICKFRAME or WS_BORDER); // Убираем рамки
+    SetWindowLong(ChildWindow, GWL_STYLE, Style);
+
+    // Устанавливаем родителем для найденного окна панель
+    Winapi.Windows.SetParent(ChildWindow, ParentPanel);
+
+    var Rect: TRect;
+    Winapi.Windows.GetClientRect(ParentPanel, Rect);
+
+    // Устанавливаем размеры дочернего окна под размеры панели
+    SetWindowPos(ChildWindow, HWND_TOP, Rect.Left, Rect.Top, Rect.Right - Rect.Left, Rect.Bottom - Rect.Top, SWP_NOZORDER or SWP_NOACTIVATE);
+
+    // Убедимся, что окно будет правильно отображаться
+    ShowWindow(ChildWindow, SW_SHOW);
+end;
+
 procedure TfrmTextureProperties.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-    ServerCmd('CAMERA CLOSE NAME=TexPropCam');
+    if PSHandle <> 0 then
+        SendMessage(PSHandle, WM_CLOSE, 0, 0);
+
+    ServerCmd('CAMERA CLOSE NAME=TexPropCam_' + IntToStr(TextureVP.Handle));
+
+    Action := caFree;
 end;
 
 procedure TfrmTextureProperties.FormCreate(Sender: TObject);
@@ -84,6 +133,11 @@ end;
 procedure TfrmTextureProperties.btnClearClick(Sender: TObject);
 begin
     ServerCmd('TEXTURE CLEAR NAME=' + AnsiQuotedStr(Caption, '"'));
+end;
+
+procedure TfrmTextureProperties.btnCloseClick(Sender: TObject);
+begin
+    Close();
 end;
 
 procedure TfrmTextureProperties.cmbZoomChange(Sender: TObject);
