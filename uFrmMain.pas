@@ -286,7 +286,7 @@ type
     N32: TMenuItem;
     miApplySelectedTex: TMenuItem;
     AppEvents: TApplicationEvents;
-    OpenMapDlg: TOpenDialog;
+    OpenDlg: TOpenDialog;
     ResizeTimer: TTimer;
     Extensions1: TMenuItem;
     InstallOpenGLDrv1: TMenuItem;
@@ -391,6 +391,8 @@ type
     se_Dist_Meters: TJvSpinEdit;
     chkUseInches: TCheckBox;
     estTextureProperties1: TMenuItem;
+    SaveDlg: TSaveDialog;
+    Gethandle1: TMenuItem;
 
     // new functions
     function CheckEditorPatch(): Boolean;
@@ -406,6 +408,7 @@ type
     procedure SetComponentsEnabled(Parent: TWinControl; bEnabled: Boolean);
     procedure SetCheckboxAsButton(ChkBox: TCheckBox);
     procedure EnableDistConverterEvents(ActiveSpinEdit: TJvSpinEdit);
+    procedure CloseAllForms();
 
     procedure ReplaceLogWindowFont();
     procedure ShowLogWindow();
@@ -522,6 +525,7 @@ type
     procedure tbBuildPathsClick(Sender: TObject);
     procedure br_MeshBrowserExecute(Sender: TObject);
     procedure estTextureProperties1Click(Sender: TObject);
+    procedure Gethandle1Click(Sender: TObject);
   private
     procedure CreateViewportPanels();
     procedure CreateViewports();
@@ -766,14 +770,13 @@ begin
                 WriteString('Engine.Engine', 'EditorRender', 'OpenGLDrv.OpenGLRender');
                 WriteString('Engine.Engine', 'EditorClient', 'OpenGLDrv.OpenGLWindowsClient');
                 WriteString('Engine.Engine', 'WindowedRenderDevice', 'OpenGLDrv.OpenGLRenderDevice');
+                WriteString('Engine.Engine', 'Canvas', 'EditorPatch.EditorCanvas'); // white font color in viewports
             end;
 
         finally
             DXIniFile.Free();
         end;
     end;
-
-
 end;
 
 procedure TfrmMain.CreateViewportPanels();
@@ -1009,10 +1012,10 @@ end;
 
 procedure TfrmMain.file_OpenMapExecute(Sender: TObject);
 begin
-    if OpenMapDlg.Execute(Handle) = True then
+    if OpenDlg.Execute(Handle) = True then
     begin
-        CurrentMap := OpenMapDlg.FileName; // set global variable so we can use it later
-        var DXLevel := AnsiQuotedStr(OpenMapDlg.FileName, '"');
+        CurrentMap := OpenDlg.FileName; // set global variable so we can use it later
+        var DXLevel := AnsiQuotedStr(OpenDlg.FileName, '"');
         ServerCmd('MAP LOAD FILE=' + DXLevel);
 
         AddRecentMapFile(CurrentMap);
@@ -1089,6 +1092,7 @@ begin
     ServerCmd('CAMERA CLOSE ALL');
     SaveCfg();
     DeleteObject(LogWindowFont);
+    CloseAllForms();
     EdExitServer();
 end;
 
@@ -1579,6 +1583,21 @@ begin
         se_Dist_Meters.OnChange := se_Dist_MetersChange;
 end;
 
+procedure TfrmMain.CloseAllForms();
+var
+    i: Integer;
+begin
+    // Close all opened "Texture properties" forms, if any.
+    for i := Screen.FormCount - 1 downto 0 do
+    begin
+        if Screen.Forms[i] <> Self then // Не закрываем главную форму
+        begin
+            Screen.Forms[i].Close;
+            Screen.Forms[i].Free; // Освобождаем память после закрытия
+        end;
+    end;
+end;
+
 procedure TfrmMain.estTextureProperties1Click(Sender: TObject);
 begin
     frmTextureProperties.SetTexture('DeusExDeco.Skins.ATMTex1');
@@ -1824,9 +1843,13 @@ end;
 
 procedure TfrmMain.ServerSetCurrentClass1Click(Sender: TObject);
 begin
-    ServerSetCurrentClass('DeusExMover');
+    var Test := ServerGetProp('Class', 'Exists name=DeusEx.DeusExMover');
+    ShowMessage('DeusEx.DeusExMover? ' + Test);
 
-    ServerSetCurrentClass('Mover');
+    var Test2 := ServerGetProp('Class', 'Exists name=InvalidPackage.NonExistingClass');
+    ShowMessage('InvalidPackage.NonExistingClass? ' + Test2);
+    //ServerSetCurrentClass('DeusExMover');
+    //ServerSetCurrentClass('Mover');
 end;
 
 procedure TfrmMain.ShowLogWindow();
@@ -1872,6 +1895,36 @@ begin
     finally
         Lines.Free();
     end;
+end;
+
+procedure TfrmMain.Gethandle1Click(Sender: TObject);
+//var
+//    h_Menu, h_Mode, h_View, h_Actors: HMENU;
+//    RM_Mode, RM_View, RM_Actors: HMENU;
+//    p: TPoint;
+//    PopupMenu: TPopupMenu;
+begin
+{    var hDll := GetModuleHandle(PChar('OpenGLDrv.dll'));
+
+    if hDll <> 0 then
+    begin
+        h_Menu := LoadMenu(hDll, PChar(156));
+
+        if h_Menu <> 0 then
+        begin
+            //h_Mode := GetSubMenu(h_Menu, 0); // Mode
+            //h_View := GetSubMenu(h_Menu, 1); // View
+            //h_Actors := GetSubMenu(h_Menu, 2); // Actor
+
+//            ShowMessage(ViewPorts[2].Tag.ToString);
+
+            GetCursorPos(p);
+
+            TrackPopupMenu(h_menu, TPM_LEFTALIGN or TPM_RIGHTBUTTON or TPM_RECURSE , p.X, p.Y, 0, ViewPorts[2].Tag, nil);
+
+            ShowMessage(GetLastError.ToString);
+        end;
+    end;}
 end;
 
 function TfrmMain.CheckFilesInPaths(const FileName: string; const EditPackages: TStrings; out MissingPackages: TStrings): Boolean;
@@ -2048,9 +2101,7 @@ begin
             frmBrushBuilder.chkCloseWhenBuilt.Checked := ReadBool('Settings', 'frmBrushBuilder.chkCloseWhenBuilt.Checked', False);
 
             // Textures Browser
-
             frmTextures.Visible := ReadBool('Settings', 'frmTextures.Visible', False);
-
             frmTextures.Height := ReadInteger('Settings', 'frmTextures.Height', 450);
             frmTextures.Width := ReadInteger('Settings', 'frmTextures.Width', 450);
 
@@ -2061,12 +2112,34 @@ begin
                 frmTextures.Top := ReadInteger('Settings', 'frmTextures.Top', 200);
             end;
 
+            // Mesh Browser
+            frmMeshViewer.Visible := ReadBool('Settings', 'frmMeshViewer.Visible', False);
+            frmMeshViewer.Height := ReadInteger('Settings', 'frmMeshViewer.Height', 510);
+            frmMeshViewer.Width := ReadInteger('Settings', 'frmMeshViewer.Width', 510);
 
-
+            if ValueExists('Settings', 'frmMeshViewer.Left') and ValueExists('Settings', 'frmMeshViewer.Top') then
+            begin
+                frmMeshViewer.Position := poDesigned;
+                frmMeshViewer.Left := ReadInteger('Settings', 'frmMeshViewer.Left', 450);
+                frmMeshViewer.Top := ReadInteger('Settings', 'frmMeshViewer.Top', 200);
+            end;
 
             // Actor Class Browser
+            frmClassBrowser.Visible := ReadBool('Settings', 'frmClassBrowser.Visible', False);
+            frmClassBrowser.Height := ReadInteger('Settings', 'frmClassBrowser.Height', 450);
+            frmClassBrowser.Width := ReadInteger('Settings', 'frmClassBrowser.Width', 450);
 
-            // Something else...
+            if ValueExists('Settings','frmClassBrowser.Left') and ValueExists('Settings', 'frmClassBrowser.Top') then
+            begin
+                frmClassBrowser.Position := poDesigned;
+                frmClassBrowser.Left := ReadInteger('Settings', 'frmClassBrowser.Left', 450);
+                frmClassBrowser.Top := ReadInteger('Settings', 'frmClassBrowser.Top', 200);
+            end;
+
+        // sounds
+
+        // Music
+
         end;
 
     finally
@@ -2097,16 +2170,29 @@ begin
 
             // Textures Browser
             WriteBool('Settings', 'frmTextures.Visible', frmTextures.Visible);
-
             WriteInteger('Settings', 'frmTextures.Height', frmTextures.Height);
             WriteInteger('Settings', 'frmTextures.Width', frmTextures.Width);
-
             WriteInteger('Settings', 'frmTextures.Left', frmTextures.Left);
             WriteInteger('Settings', 'frmTextures.Top', frmTextures.Top);
 
-            // Actor Class Browser
+            // Mesh Browser
+            WriteBool('Settings', 'frmMeshViewer.Visible', frmMeshViewer.Visible);
+            WriteInteger('Settings', 'frmMeshViewer.Height', frmMeshViewer.Height);
+            WriteInteger('Settings', 'frmMeshViewer.Width', frmMeshViewer.Width);
+            WriteInteger('Settings', 'frmMeshViewer.Left', frmMeshViewer.Left);
+            WriteInteger('Settings', 'frmMeshViewer.Top', frmMeshViewer.Top);
 
-            // Something else...
+            // Actor Class Browser
+            WriteBool('Settings', 'frmClassBrowser.Visible', frmClassBrowser.Visible);
+            WriteInteger('Settings', 'frmClassBrowser.Height', frmClassBrowser.Height);
+            WriteInteger('Settings', 'frmClassBrowser.Width', frmClassBrowser.Width);
+            WriteInteger('Settings', 'frmClassBrowser.Left', frmClassBrowser.Left);
+            WriteInteger('Settings', 'frmClassBrowser.Top', frmClassBrowser.Top);
+
+
+            // Sounds
+
+            // Music
         end;
 
     finally
