@@ -3,8 +3,10 @@ object frmMeshViewer: TfrmMeshViewer
   Top = 0
   Caption = 'Mesh Browser'
   ClientHeight = 480
-  ClientWidth = 498
+  ClientWidth = 502
   Color = clBtnFace
+  Constraints.MinHeight = 480
+  Constraints.MinWidth = 510
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -12
@@ -13,23 +15,25 @@ object frmMeshViewer: TfrmMeshViewer
   Position = poMainFormCenter
   ShowHint = True
   OnClose = FormClose
+  OnCreate = FormCreate
   OnShow = FormShow
   TextHeight = 15
   object MeshViewport: TEsPanel
     Left = 0
     Top = 184
-    Width = 498
+    Width = 502
     Height = 296
     Align = alClient
     TabOrder = 0
     OnResize = MeshViewportResize
     FrameStyle = Chess
+    ExplicitWidth = 498
   end
   object GroupBox1: TGroupBox
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 492
+    Width = 496
     Height = 178
     Align = alTop
     Caption = 'Controls'
@@ -40,6 +44,7 @@ object frmMeshViewer: TfrmMeshViewer
     HeaderFont.Name = 'Segoe UI'
     HeaderFont.Style = [fsBold]
     TabOrder = 1
+    ExplicitWidth = 492
     object Label1: TLabel
       AlignWithMargins = True
       Left = 5

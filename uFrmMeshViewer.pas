@@ -49,6 +49,7 @@ type
     procedure btnNextAnimFlameClick(Sender: TObject);
     procedure btnPlayAnimClick(Sender: TObject);
     procedure chkGrayMeshBGClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -220,6 +221,11 @@ begin
     ServerCmd('CAMERA CLOSE NAME=MeshViewCam');
     ServerCmd('set editorengine C_WireBackground (R=0,G=0,B=0)'); // Reset background color back to default
     chkGrayMeshBG.Checked := False;
+end;
+
+procedure TfrmMeshViewer.FormCreate(Sender: TObject);
+begin
+    cmbMeshes.Sorted := True;
 end;
 
 procedure TfrmMeshViewer.FormShow(Sender: TObject);
