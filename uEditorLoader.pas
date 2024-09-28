@@ -115,6 +115,7 @@ var
 begin
     AnsiTopic := AnsiString(Topic);
     AnsiItem := AnsiString(Item);
+    AnsiValue := AnsiString(Value);
 
     EdSetProp(PAnsiChar(AnsiTopic), PAnsiChar(AnsiItem), PAnsiChar(AnsiValue));
 end;
