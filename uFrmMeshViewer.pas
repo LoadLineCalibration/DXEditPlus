@@ -28,12 +28,18 @@ type
     btnRefresh: TButton;
     rbWireframe: TRadioButton;
     chkGrayMeshBG: TCheckBox;
+    cmbPackages: TComboBox;
+    btnNextPackage: TButton;
+    btnPrevPackage: TButton;
 
     // New procedures
+    procedure UpdatePackageList(cmd: string);
     procedure UpdateMeshList(Cmd: string);
     procedure UpdateFrameList(Cmd: string);
     procedure UpdateFrame(Cmd: string);
     procedure UpdateFrameCaption(Cmd: string);
+
+
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure MeshViewportResize(Sender: TObject);
@@ -50,9 +56,13 @@ type
     procedure btnPlayAnimClick(Sender: TObject);
     procedure chkGrayMeshBGClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure cmbPackagesChange(Sender: TObject);
+    procedure btnNextPackageClick(Sender: TObject);
+    procedure btnPrevPackageClick(Sender: TObject);
   private
     { Private declarations }
   public
+    var CurrentMesh: string;
     { Public declarations }
   end;
 
@@ -67,24 +77,35 @@ implementation
 
 {$R *.dfm}
 
-procedure TfrmMeshViewer.UpdateMeshList(Cmd: string);
-var
-    ResultStr, S: string;
+procedure TfrmMeshViewer.UpdatePackageList(cmd: string);
 begin
-    cmbMeshes.Clear;
-    ResultStr := ServerGetProp('OBJ', 'Query Type=Mesh');
+    cmbPackages.Clear();
 
-    while True do
+    var PackList:= ServerGetProp('OBJ', 'PACKAGES CLASS=Mesh');
+    while PackList <> '' do
+        cmbPackages.Items.Add(ExtractCommaString(PackList));
+
+    if cmbPackages.Items.Count > 0 then
     begin
-        S := ExtractString(ResultStr);
-        if S = '' then Break;
-        cmbMeshes.Items.Add(S);
+        cmbPackages.ItemIndex := 0;
+        UpdateMeshList(cmd);
     end;
+end;
+
+procedure TfrmMeshViewer.UpdateMeshList(Cmd: string);
+begin
+    cmbMeshes.Clear();
+
+    var ItemIdx:= cmbPackages.ItemIndex;
+    var MeshList:= ServerGetProp('OBJ', 'QUERY TYPE=Mesh PACKAGE=' + cmbPackages.Items[ItemIdx]);
+    while MeshList <> '' do
+        cmbMeshes.Items.Add(ExtractString(MeshList));
 
     if cmbMeshes.Items.Count > 0 then
+    begin
         cmbMeshes.ItemIndex := 0;
-
-    UpdateFrameList(Cmd);
+        UpdateFrameList(Cmd);
+    end;
 end;
 
 procedure TfrmMeshViewer.UpdateFrameList(Cmd: string);
@@ -122,6 +143,16 @@ begin
 
         cmbMeshesChange(self);
     end;
+end;
+
+procedure TfrmMeshViewer.btnNextPackageClick(Sender: TObject);
+begin
+    if cmbPackages.ItemIndex = cmbPackages.Items.Count - 1 then
+        cmbPackages.ItemIndex := 0
+    else
+        cmbPackages.ItemIndex := cmbPackages.ItemIndex + 1;
+
+    cmbPackagesChange(self);
 end;
 
 procedure TfrmMeshViewer.btnNextAnimFlameClick(Sender: TObject);
@@ -182,9 +213,19 @@ begin
     end;
 end;
 
+procedure TfrmMeshViewer.btnPrevPackageClick(Sender: TObject);
+begin
+    if cmbPackages.ItemIndex = 0 then
+        cmbPackages.ItemIndex := cmbPackages.Items.Count - 1
+    else
+        cmbPackages.ItemIndex := cmbPackages.ItemIndex - 1;
+
+    cmbPackagesChange(self);
+end;
+
 procedure TfrmMeshViewer.btnRefreshClick(Sender: TObject);
 begin
-    UpdateMeshList('Update');
+    UpdatePackageList('Update')
 end;
 
 procedure TfrmMeshViewer.btnZeroFrameAnimClick(Sender: TObject);
@@ -211,6 +252,16 @@ end;
 procedure TfrmMeshViewer.cmbMeshesChange(Sender: TObject);
 begin
     UpdateFrameList('Update');
+
+    if cmbMeshes.ItemIndex <> -1 then
+        CurrentMesh := cmbMeshes.Items[cmbMeshes.ItemIndex]
+    else
+        CurrentMesh := '';
+end;
+
+procedure TfrmMeshViewer.cmbPackagesChange(Sender: TObject);
+begin
+    UpdateMeshList('Update');
 end;
 
 procedure TfrmMeshViewer.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -230,7 +281,10 @@ end;
 
 procedure TfrmMeshViewer.FormShow(Sender: TObject);
 begin
-    UpdateMeshList('Open');
+    UpdatePackageList('Open');
+
+//    UpdateMeshList('Open');
+//    cmbMeshesChange(self);
 end;
 
 procedure TfrmMeshViewer.lbAnimSeqClick(Sender: TObject);
@@ -344,6 +398,5 @@ begin
       ' MISC1=' + Copy(lbAnimSeq.Items[lbAnimSeq.ItemIndex], Length(lbAnimSeq.Items[lbAnimSeq.ItemIndex]) - 6, 3) +
       ' MISC2=' + IntToStr(FramePos) + Tmp);
 end;
-
 
 end.

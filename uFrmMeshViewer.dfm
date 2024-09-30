@@ -2,11 +2,11 @@ object frmMeshViewer: TfrmMeshViewer
   Left = 0
   Top = 0
   Caption = 'Mesh Browser'
-  ClientHeight = 480
-  ClientWidth = 502
+  ClientHeight = 490
+  ClientWidth = 409
   Color = clBtnFace
-  Constraints.MinHeight = 480
-  Constraints.MinWidth = 510
+  Constraints.MinHeight = 400
+  Constraints.MinWidth = 300
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -12
@@ -20,21 +20,23 @@ object frmMeshViewer: TfrmMeshViewer
   TextHeight = 15
   object MeshViewport: TEsPanel
     Left = 0
-    Top = 184
-    Width = 502
-    Height = 296
+    Top = 220
+    Width = 409
+    Height = 270
     Align = alClient
     TabOrder = 0
     OnResize = MeshViewportResize
     FrameStyle = Chess
-    ExplicitWidth = 498
+    ExplicitTop = 184
+    ExplicitWidth = 502
+    ExplicitHeight = 296
   end
   object GroupBox1: TGroupBox
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 496
-    Height = 178
+    Width = 403
+    Height = 214
     Align = alTop
     Caption = 'Controls'
     DefaultHeaderFont = False
@@ -44,22 +46,25 @@ object frmMeshViewer: TfrmMeshViewer
     HeaderFont.Name = 'Segoe UI'
     HeaderFont.Style = [fsBold]
     TabOrder = 1
-    ExplicitWidth = 492
+    ExplicitWidth = 496
+    DesignSize = (
+      403
+      214)
     object Label1: TLabel
       AlignWithMargins = True
       Left = 5
       Top = 20
       Width = 80
-      Height = 153
+      Height = 189
       Align = alLeft
       Alignment = taRightJustify
       AutoSize = False
-      Caption = 'Meshes:'#13#10#13#10'Animations:'#13#10'(Name/Num/'#13#10'NumFrames)'
-      ExplicitTop = 22
+      Caption = 'Packages:'#13#10#13#10'Meshes:'#13#10#13#10'Animations:'#13#10'(Name/Num/'#13#10'NumFrames)'
+      ExplicitTop = 32
     end
     object lblFrame: TLabel
-      Left = 167
-      Top = 147
+      Left = 171
+      Top = 179
       Width = 217
       Height = 25
       AutoSize = False
@@ -67,11 +72,12 @@ object frmMeshViewer: TfrmMeshViewer
       Layout = tlCenter
     end
     object cmbMeshes: TComboBox
-      Left = 91
-      Top = 17
-      Width = 334
+      Left = 95
+      Top = 46
+      Width = 241
       Height = 22
       Style = csOwnerDrawFixed
+      Anchors = [akLeft, akTop, akRight]
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -12
@@ -80,13 +86,15 @@ object frmMeshViewer: TfrmMeshViewer
       ParentFont = False
       TabOrder = 0
       OnChange = cmbMeshesChange
+      ExplicitWidth = 334
     end
     object lbAnimSeq: TListBox
-      Left = 91
-      Top = 45
-      Width = 293
-      Height = 96
+      Left = 95
+      Top = 74
+      Width = 200
+      Height = 99
       Style = lbOwnerDrawFixed
+      Anchors = [akLeft, akTop, akRight]
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -12
@@ -108,12 +116,14 @@ object frmMeshViewer: TfrmMeshViewer
       TabOrder = 1
       OnClick = lbAnimSeqClick
       OnDrawItem = lbAnimSeqDrawItem
+      ExplicitWidth = 293
     end
     object btnPrevMesh: TButton
-      Left = 431
-      Top = 17
+      Left = 342
+      Top = 45
       Width = 26
-      Height = 25
+      Height = 22
+      Anchors = [akTop, akRight]
       Caption = '3'
       Font.Charset = SYMBOL_CHARSET
       Font.Color = clWindowText
@@ -123,12 +133,14 @@ object frmMeshViewer: TfrmMeshViewer
       ParentFont = False
       TabOrder = 2
       OnClick = btnPrevMeshClick
+      ExplicitLeft = 435
     end
     object btnNextMesh: TButton
-      Left = 459
-      Top = 17
+      Left = 370
+      Top = 46
       Width = 26
-      Height = 25
+      Height = 22
+      Anchors = [akTop, akRight]
       Caption = '4'
       Font.Charset = SYMBOL_CHARSET
       Font.Color = clWindowText
@@ -138,14 +150,17 @@ object frmMeshViewer: TfrmMeshViewer
       ParentFont = False
       TabOrder = 3
       OnClick = btnNextMeshClick
+      ExplicitLeft = 463
     end
     object GroupBox2: TGroupBox
-      Left = 390
-      Top = 45
+      Left = 301
+      Top = 77
       Width = 95
       Height = 130
+      Anchors = [akTop, akRight]
       Caption = 'View'
       TabOrder = 4
+      ExplicitLeft = 394
       object rbTexturedMesh: TRadioButton
         Left = 8
         Top = 20
@@ -200,7 +215,7 @@ object frmMeshViewer: TfrmMeshViewer
     end
     object btnPlayAnim: TButton
       Left = 91
-      Top = 147
+      Top = 179
       Width = 70
       Height = 25
       Hint = 'Play/Stop the selected animation'
@@ -210,7 +225,7 @@ object frmMeshViewer: TfrmMeshViewer
     end
     object btnZeroFrameAnim: TButton
       Left = 7
-      Top = 147
+      Top = 179
       Width = 26
       Height = 25
       Hint = 'Jump to starting frame of selected animation'
@@ -220,7 +235,7 @@ object frmMeshViewer: TfrmMeshViewer
     end
     object btnNextAnimFlame: TButton
       Left = 63
-      Top = 147
+      Top = 179
       Width = 26
       Height = 25
       Hint = 'Next anim frame'
@@ -236,7 +251,7 @@ object frmMeshViewer: TfrmMeshViewer
     end
     object btnPrevAnimFlame: TButton
       Left = 35
-      Top = 147
+      Top = 179
       Width = 26
       Height = 25
       Hint = 'Prev. anim frame'
@@ -252,13 +267,60 @@ object frmMeshViewer: TfrmMeshViewer
     end
     object btnRefresh: TButton
       Left = 7
-      Top = 116
-      Width = 78
+      Top = 148
+      Width = 82
       Height = 25
       Hint = 'Reloads the list of meshes'
       Caption = 'Refresh'
       TabOrder = 9
       OnClick = btnRefreshClick
+    end
+    object cmbPackages: TComboBox
+      Left = 96
+      Top = 17
+      Width = 241
+      Height = 22
+      Style = csOwnerDrawFixed
+      Anchors = [akLeft, akTop, akRight]
+      TabOrder = 10
+      OnChange = cmbPackagesChange
+      ExplicitWidth = 334
+    end
+    object btnNextPackage: TButton
+      Left = 370
+      Top = 18
+      Width = 26
+      Height = 22
+      Hint = 'Next texture package'
+      Anchors = [akTop, akRight]
+      Caption = '4'
+      Font.Charset = SYMBOL_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Marlett'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 11
+      OnClick = btnNextPackageClick
+      ExplicitLeft = 463
+    end
+    object btnPrevPackage: TButton
+      Left = 342
+      Top = 18
+      Width = 26
+      Height = 22
+      Hint = 'Prev. texture package'
+      Anchors = [akTop, akRight]
+      Caption = '3'
+      Font.Charset = SYMBOL_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Marlett'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 12
+      OnClick = btnPrevPackageClick
+      ExplicitLeft = 435
     end
   end
 end
