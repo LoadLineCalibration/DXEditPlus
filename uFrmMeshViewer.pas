@@ -62,7 +62,7 @@ type
   private
     { Private declarations }
   public
-    var CurrentMesh: string;
+    function GetSelectedMesh(): string;
     { Public declarations }
   end;
 
@@ -252,11 +252,6 @@ end;
 procedure TfrmMeshViewer.cmbMeshesChange(Sender: TObject);
 begin
     UpdateFrameList('Update');
-
-    if cmbMeshes.ItemIndex <> -1 then
-        CurrentMesh := cmbMeshes.Items[cmbMeshes.ItemIndex]
-    else
-        CurrentMesh := '';
 end;
 
 procedure TfrmMeshViewer.cmbPackagesChange(Sender: TObject);
@@ -397,6 +392,20 @@ begin
       ' HWND=' + IntToStr(MeshViewport.Handle) +
       ' MISC1=' + Copy(lbAnimSeq.Items[lbAnimSeq.ItemIndex], Length(lbAnimSeq.Items[lbAnimSeq.ItemIndex]) - 6, 3) +
       ' MISC2=' + IntToStr(FramePos) + Tmp);
+end;
+
+function TfrmMeshViewer.GetSelectedMesh(): string;
+begin
+    if cmbPackages.ItemIndex = -1 then Exit('');
+    if cmbMeshes.ItemIndex = -1 then Exit('');
+
+    var PackIdx := cmbPackages.ItemIndex;
+    var MeshIdx := cmbMeshes.ItemIndex;
+    var MeshPath: string;
+
+    MeshPath := Format('%s.%s', [cmbPackages.Items[PackIdx], cmbMeshes.Items[MeshIdx]]);
+
+    Result := MeshPath;
 end;
 
 end.
