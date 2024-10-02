@@ -50,8 +50,8 @@ object frmTextureProperties: TfrmTextureProperties
     Align = alClient
     TabOrder = 1
     FrameStyle = Chess
-    ExplicitLeft = 380
-    ExplicitWidth = 210
+    ExplicitLeft = 383
+    ExplicitTop = -2
   end
   object EsPanel2: TEsPanel
     Left = 0
@@ -61,7 +61,6 @@ object frmTextureProperties: TfrmTextureProperties
     Align = alBottom
     TabOrder = 2
     FrameStyle = Chess
-    ExplicitWidth = 590
     DesignSize = (
       640
       30)

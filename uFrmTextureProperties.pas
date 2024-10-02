@@ -33,7 +33,7 @@ type
   private
     { Private declarations }
   public
-    var PSHandle: HWND;
+    var PropertiesWndtHandle: HWND;
     { Public declarations }
   end;
 
@@ -85,13 +85,13 @@ end;
 
 procedure TfrmTextureProperties.Splitter1Moved(Sender: TObject);
 begin
-    if PSHandle = 0 then Exit();
+    if PropertiesWndtHandle = 0 then Exit();
 
     var Rect: TRect;
     Winapi.Windows.GetClientRect(pnlTexProps.Handle, Rect);
 
     // Устанавливаем размеры дочернего окна под размеры панели
-    SetWindowPos(PSHandle, HWND_TOP, Rect.Left, Rect.Top, Rect.Right - Rect.Left, Rect.Bottom - Rect.Top, SWP_NOZORDER or SWP_NOACTIVATE);
+    SetWindowPos(PropertiesWndtHandle, HWND_TOP, Rect.Left, Rect.Top, Rect.Right - Rect.Left, Rect.Bottom - Rect.Top, SWP_NOZORDER or SWP_NOACTIVATE);
 end;
 
 procedure TfrmTextureProperties.IntegrateWindowToPanel(ChildWindow: HWND; ParentPanel: HWND);
@@ -100,6 +100,7 @@ var
 begin
     Style := GetWindowLong(ChildWindow, GWL_STYLE);
     Style := Style and not (WS_CAPTION or WS_THICKFRAME or WS_BORDER); // Убираем рамки
+    Style := Style or WS_CHILD;
     SetWindowLong(ChildWindow, GWL_STYLE, Style);
 
     // Устанавливаем родителем для найденного окна панель
@@ -117,8 +118,8 @@ end;
 
 procedure TfrmTextureProperties.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-    if PSHandle <> 0 then
-        SendMessage(PSHandle, WM_CLOSE, 0, 0);
+    if PropertiesWndtHandle <> 0 then
+        SendMessage(PropertiesWndtHandle, WM_CLOSE, 0, 0);
 
     ServerCmd('CAMERA CLOSE NAME=TexPropCam_' + IntToStr(TextureVP.Handle));
 
