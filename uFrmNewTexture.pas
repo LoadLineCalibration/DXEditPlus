@@ -51,10 +51,11 @@ begin
         ' NAME=' + AnsiQuotedStr(edtTexName.Text, '"') +
         ' CLASS=' + cmbTextureClass.Items[cmbTextureClass.ItemIndex] +
         ' GROUP=' + edtGroup.Text +
-        ' USIZE=' + se_TexWidth.Value.ToString +
-        ' VSIZE=' + se_TexHeight.Value.ToString +
+        ' USIZE=' + se_TexWidth.Text  + // Value.ToString +
+        ' VSIZE=' + se_TexHeight.Text + //Value.ToString +
         ' PACKAGE=' + AnsiQuotedStr(edtPackage.Text, '"'));
 
+    frmTextures.TexScrollbarChange(frmTextures); // update browser window
     Close();
 end;
 
