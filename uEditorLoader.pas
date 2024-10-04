@@ -82,6 +82,9 @@ procedure SelectOfAttachTag(const NewTag: string); // 	Selects all Actors with A
 procedure SelectOfBindName(const NewBindName: string); //	Selects all Actors with Bindname=<bindname>
 procedure SelectOfBarkBindName(const NewBarkBindName: string); // 	Selects all Actors with BarkBindname=<barkbindname>
 
+// Remove fonts from lists
+procedure RemoveFilteredItems(List: TStrings; const FilterArray: array of string);
+
 
 
 implementation
@@ -91,7 +94,6 @@ var
     Cmd: AnsiString;
 begin
     Cmd := AnsiString(command);  // Преобразуем строку в AnsiString
-
     EdExec(PAnsiChar(Cmd));
 end;
 
@@ -399,7 +401,6 @@ begin
     Result := Round((Radians / (2 * Pi)) * 65536);
 end;
 
-
 function GenerateVertTexSkew(VertRise, VertRun, VertScale: Double; bVertNegate: Boolean): string;
 var
     VV, VU: Double;
@@ -678,6 +679,25 @@ begin
     ServerCmd(Format('ACTOR SELECT OFBARKBINDNAME BARKBINDNAME=%s', [NewBarkBindName]));
 end;
 
-
+procedure RemoveFilteredItems(List: TStrings; const FilterArray: array of string);
+var
+    i, j: Integer;
+begin
+    i := List.Count - 1;
+    // Проходим по элементам списка с конца
+    while i >= 0 do
+    begin
+        // Проверяем, содержится ли элемент в массиве FilterArray
+        for j := Low(FilterArray) to High(FilterArray) do
+        begin
+            if UpperCase(List[i]) = UpperCase(FilterArray[j]) then
+            begin
+                List.Delete(i); // Удаляем элемент
+                Break; // Прерываем цикл, так как элемент уже удален
+            end;
+        end;
+        Dec(i);
+    end;
+end;
 
 end.
